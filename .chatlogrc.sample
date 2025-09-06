@@ -1,0 +1,15 @@
+# Sample configuration for the local chatlog workflow
+# Copy to ".chatlogrc" in the repo root to activate.
+
+# If set to 1, the pre-push hook will append clipboard contents
+# to the chatlog (labelled below) before pushing.
+AUTO_APPEND_CLIPBOARD=1
+
+# Optional: Customize the label used by the pre-push hook appends
+# (visible in the chatlog next to the content hash CID)
+LABEL="Pre-push (Clipboard)"
+
+# Tip: To queue content for the next push, write it to
+# docs/pending_chat_append.txt and it will be appended and removed
+# automatically by the pre-push hook.
+
