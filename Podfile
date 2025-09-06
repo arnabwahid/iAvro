@@ -1,6 +1,6 @@
 source 'https://cdn.cocoapods.org/'
 
-platform :osx, '10.11'
+platform :osx, '10.13'
 
 target 'Avro Keyboard' do
   pod 'RegexKitLite', '~> 4.0'
