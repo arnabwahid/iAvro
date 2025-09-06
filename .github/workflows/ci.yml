@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ dev ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
     runs-on: macos-14
@@ -45,6 +49,17 @@ jobs:
         run: |
           brew update
           brew install subversion
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            Pods
+            ~/.cocoapods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
 
       - name: Pod install
         run: |
@@ -215,6 +230,24 @@ jobs:
           retention-days: 30
           path: |
             ci-logs/**
+
+      - name: Comment failure summary on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'ci-logs/ci_summary.txt';
+            let body = 'CI failure, but no summary was generated.';
+            try { body = fs.readFileSync(path, 'utf8'); } catch (e) {}
+            const header = `CI Failure Summary (workflow: ${process.env.GITHUB_WORKFLOW})\n\n`;
+            const pr = context.payload.pull_request;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: '```\n' + header + body + '\n```'
+            });
 
       - name: Regression tests (optional; skip if file missing)
         shell: bash
