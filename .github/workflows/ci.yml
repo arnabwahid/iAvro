@@ -26,6 +26,14 @@ jobs:
         run: |
           gem install xcpretty --no-document
 
+      - name: Install CocoaPods
+        run: |
+          gem install cocoapods --no-document
+
+      - name: Pod install
+        run: |
+          pod install --repo-update --silent || pod install
+
       - name: Detect project or workspace
         id: detect
         shell: bash

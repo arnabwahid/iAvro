@@ -1,6 +1,6 @@
-source 'https://github.com/CocoaPods/Specs.git'
-platform :osx
+platform :osx, '10.11'
 
-target 'Avro Keyboard'
-pod 'RegexKitLite', '~> 4.0'
-pod 'FMDB', '~> 2.1'
+target 'Avro Keyboard' do
+  pod 'RegexKitLite', '~> 4.0'
+  pod 'FMDB', '~> 2.1'
+end
