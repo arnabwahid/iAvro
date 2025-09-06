@@ -40,7 +40,6 @@
 		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
 		E93074E20A5C2F1200470842 /* AvroKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = E93074E10A5C2F1200470842 /* AvroKeyboardController.m */; };
 		F0A1B2C30D4E5F60718293A6 /* ModeSmokeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */; };
-		F0A1B2C30D4E5F60718293A8 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A1B2C30D4E5F60718293A9 /* XCTest.framework */; };
 		F0A1B2C30D4E5F60718293AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -94,7 +93,6 @@
 		8D1107320486CEB800E47090 /* Avro Keyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avro Keyboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAvroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModeSmokeTests.m; sourceTree = "<group>"; };
-		F0A1B2C30D4E5F60718293A9 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avro Keyboard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard.debug.xcconfig"; sourceTree = "<group>"; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		E93074E00A5C2F1200470842 /* AvroKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvroKeyboardController.h; sourceTree = "<group>"; };
@@ -119,7 +117,6 @@
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
             files = (
-                F0A1B2C30D4E5F60718293A8 /* XCTest.framework in Frameworks */,
                 F0A1B2C30D4E5F60718293AA /* Cocoa.framework in Frameworks */,
             );
             runOnlyForDeploymentPostprocessing = 0;
@@ -218,7 +215,6 @@
 				350CECF5159C5C5F0009F0FE /* libsqlite3.dylib */,
 				350CECF1159C5BEF0009F0FE /* libicucore.dylib */,
 				37361BFC8512F1D38B7962DD /* libPods-Avro Keyboard.a */,
-				F0A1B2C30D4E5F60718293A9 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
