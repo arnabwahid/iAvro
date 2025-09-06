@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Local pre-push hook to keep chatlog consistent before pushing.
+# This runs only locally; it is not enforced on remote.
+# It supports two optional behaviors:
+# 1) If docs/pending_chat_append.txt exists and is non-empty, append its contents then remove it.
+# 2) If AUTO_APPEND_CLIPBOARD=1 (env) or .chatlogrc contains AUTO_APPEND_CLIPBOARD=1, append clipboard.
+# In both cases, it labels the append and stages the chatlog file.
+
+set -euo pipefail
+
+ROOT_DIR=$(git rev-parse --show-toplevel)
+cd "$ROOT_DIR"
+
+CHAT_FILE="docs/iavro_forgiving_typing_chatlog.md"
+PENDING_FILE="docs/pending_chat_append.txt"
+APPENDER="tools/append-chatlog.sh"
+LABEL="Pre-push"
+
+# Load optional config
+if [[ -f .chatlogrc ]]; then
+  source .chatlogrc || true
+fi
+
+append_from_file() {
+  local src="$1"
+  if [[ -s "$src" ]]; then
+    bash "$APPENDER" --from-file "$src" --label "$LABEL" || true
+    rm -f "$src" || true
+    git add "$CHAT_FILE" || true
+  fi
+}
+
+append_from_clipboard() {
+  if command -v pbpaste >/dev/null 2>&1 || command -v xclip >/dev/null 2>&1 || command -v xsel >/dev/null 2>&1; then
+    bash "$APPENDER" --from-clipboard --label "$LABEL (Clipboard)" || true
+    git add "$CHAT_FILE" || true
+  fi
+}
+
+# 1) Pending append file
+append_from_file "$PENDING_FILE"
+
+# 2) Optional clipboard append if enabled
+if [[ "${AUTO_APPEND_CLIPBOARD:-0}" == "1" ]]; then
+  append_from_clipboard
+fi
+
+# Continue push
+exit 0
+

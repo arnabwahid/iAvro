@@ -20,5 +20,6 @@ DerivedData
 #CocoaPods
 Pods
 /Installer
-# Internal documentation
-docs/
+# Internal documentation (now tracked)
+\# Local chatlog appender (not pushed)
+tools/append-chatlog.sh
