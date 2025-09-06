@@ -51,6 +51,7 @@ jobs:
           brew install subversion
 
       - name: Cache CocoaPods
+        id: pods_cache
         uses: actions/cache@v4
         with:
           path: |
@@ -60,6 +61,16 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
+
+      - name: Cache Xcode DerivedData
+        id: derived_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ hashFiles('AvroKeyboard.xcodeproj/project.pbxproj', 'Podfile.lock') }}-${{ env.SCHEME }}
+          restore-keys: |
+            ${{ runner.os }}-derived-
 
       - name: Pod install
         run: |
@@ -113,6 +124,9 @@ jobs:
           fi
           echo "Resolved scheme: '$SEL'"
           echo "SCHEME_RESOLVED=$SEL" >> "$GITHUB_ENV"
+
+      - name: Record build start time
+        run: echo "BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Build
         shell: bash
@@ -231,6 +245,42 @@ jobs:
           path: |
             ci-logs/**
 
+      - name: Record build end time
+        if: success()
+        run: echo "BUILD_END=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Comment success summary on PR
+        if: success() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            function fmtSeconds(sec) {
+              sec = Number(sec || 0);
+              const m = Math.floor(sec / 60);
+              const s = sec % 60;
+              return (m > 0 ? `${m}m ` : '') + `${s}s`;
+            }
+            const start = Number(process.env.BUILD_START || 0);
+            const end = Number(process.env.BUILD_END || 0);
+            const duration = (end && start) ? (end - start) : 0;
+            const podsCache = core.getInput('podsHit') || (process.env.PODS_HIT || '');
+            const derivedCache = core.getInput('derivedHit') || (process.env.DERIVED_HIT || '');
+            const podsHit = '${{ steps.pods_cache.outputs.cache-hit }}' === 'true';
+            const derivedHit = '${{ steps.derived_cache.outputs.cache-hit }}' === 'true';
+            const pr = context.payload.pull_request;
+            const body = [
+              `CI Success Summary (workflow: ${process.env.GITHUB_WORKFLOW})`,
+              '',
+              `• Build time: ${fmtSeconds(duration)}`,
+              `• CocoaPods cache hit: ${podsHit}`,
+              `• DerivedData cache hit: ${derivedHit}`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body
+            });
       - name: Comment failure summary on PR
         if: failure() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
