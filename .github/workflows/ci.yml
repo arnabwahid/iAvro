@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-13
     env:
       CACHE_VERSION: v1        # bump to v2 to invalidate old caches
       SCHEME: Avro Keyboard   # Default equals target name in this repo
@@ -44,7 +44,7 @@ jobs:
 
       - name: Install CocoaPods (pinned)
         run: |
-          gem install cocoapods -v 1.13.0 --no-document
+          gem install cocoapods -v 1.11.3 --no-document
           pod --version
 
       - name: Install Subversion (for RegexKitLite)
