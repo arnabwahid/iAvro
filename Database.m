@@ -6,9 +6,9 @@
 //
 
 #import "Database.h"
-#import "FMDatabase.h"
+#import <FMDB/FMDatabase.h>
 #import "RegexParser.h"
-#import "RegexKitLite.h"
+#import <RegexKitLite/RegexKitLite.h>
 
 static Database* sharedInstance = nil;
 

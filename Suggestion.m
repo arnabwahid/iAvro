@@ -12,7 +12,7 @@
 #import "Database.h"
 #import "NSString+Levenshtein.h"
 #import "CacheManager.h"
-#import "RegexKitLite.h"
+#import <RegexKitLite/RegexKitLite.h>
 
 static Suggestion* sharedInstance = nil;
 
