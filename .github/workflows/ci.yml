@@ -13,6 +13,7 @@ jobs:
       SCHEME: Avro Keyboard   # Default equals target name in this repo
       TARGET: Avro Keyboard   # Fallback target if no shared scheme
       CONFIG: Debug
+      LOG_DIR: ci-logs        # Directory for CI logs and summaries
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,6 +22,10 @@ jobs:
         run: |
           xcodebuild -version
           sw_vers
+
+      - name: Prepare logs directory
+        run: |
+          rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
 
       - name: Install xcpretty
         run: |
@@ -99,7 +104,7 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
-              build | xcpretty
+              build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty
           else
             xcodebuild \
               -project "${PROJECT}" \
@@ -107,7 +112,7 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
-              build | xcpretty || {
+              build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty || {
                 echo "Scheme build failed; retrying with target '$TARGET'";
                 xcodebuild \
                   -project "${PROJECT}" \
@@ -115,7 +120,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
-                  build | xcpretty;
+                  build 2>&1 | tee -a "$LOG_DIR/build.log" | xcpretty;
               }
           fi
         env:
@@ -137,7 +142,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
-                  test | xcpretty
+                  test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
               else
                 echo "No shared scheme detected; skipping XCTest run."
               fi
@@ -149,7 +154,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
-                  test | xcpretty
+                  test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
               else
                 echo "No shared scheme detected; skipping XCTest run."
               fi
@@ -157,6 +162,52 @@ jobs:
           else
             echo "No XCTest targets detected; skipping test step."
           fi
+
+      - name: Summarize failure (Option B)
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUMMARY="$LOG_DIR/ci_summary.txt"
+          {
+            echo "CI Failure Summary"
+            echo "Kind: ${KIND:-unknown}"
+            echo "Workspace: ${WORKSPACE:-n/a}"
+            echo "Project: ${PROJECT:-n/a}"
+            echo "Scheme: ${SCHEME_RESOLVED:-n/a}"
+            echo
+            if [[ -f "$LOG_DIR/build.log" ]]; then
+              echo "=== Build Errors (top hits) ==="
+              grep -nE "xcodebuild: error:|\\berror:|Undefined symbols|Command PhaseScriptExecution failed|exit code 65|ld: error" "$LOG_DIR/build.log" | head -n 100 || true
+              echo
+              echo "=== Build Log Tail (200 lines) ==="
+              tail -n 200 "$LOG_DIR/build.log" || true
+              echo
+            else
+              echo "No build.log captured."
+            fi
+            if [[ -f "$LOG_DIR/test.log" ]]; then
+              echo "=== Test Errors (top hits) ==="
+              grep -nE "\\berror:|failing|Assertion failed|Test Failed|Failures:" "$LOG_DIR/test.log" | head -n 100 || true
+              echo
+              echo "=== Test Log Tail (200 lines) ==="
+              tail -n 200 "$LOG_DIR/test.log" || true
+              echo
+            fi
+          } > "$SUMMARY"
+          echo "## CI Failure Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '\`\`\`' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 200 "$SUMMARY" >> "$GITHUB_STEP_SUMMARY" || true
+          echo '\`\`\`' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload logs (Option A fallback)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs
+          path: |
+            ci-logs/**
 
       - name: Regression tests (optional; skip if file missing)
         shell: bash
