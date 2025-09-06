@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [ dev, feature/**, bugfix/**, chore/** ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    env:
+      SCHEME: iAvro           # << update if your Xcode scheme differs
+      CONFIG: Debug
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: |
+          xcodebuild -version
+          sw_vers
+
+      - name: Detect project or workspace
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          WS=$(ls -1 *.xcworkspace 2>/dev/null | head -n1 || true)
+          PRJ=$(ls -1 *.xcodeproj    2>/dev/null | head -n1 || true)
+          if [[ -n "$WS" ]]; then
+            echo "workspace=$WS" >> "$GITHUB_OUTPUT"
+            echo "kind=workspace" >> "$GITHUB_OUTPUT"
+          elif [[ -n "$PRJ" ]]; then
+            echo "project=$PRJ"   >> "$GITHUB_OUTPUT"
+            echo "kind=project"   >> "$GITHUB_OUTPUT"
+          else
+            echo "No .xcworkspace or .xcodeproj found"; exit 1
+          fi
+
+      - name: Build
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
+            xcodebuild \
+              -workspace "${{ steps.detect.outputs.workspace }}" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -destination 'platform=macOS' \
+              CODE_SIGNING_ALLOWED=NO \
+              build | xcpretty
+          else
+            xcodebuild \
+              -project "${{ steps.detect.outputs.project }}" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -destination 'platform=macOS' \
+              CODE_SIGNING_ALLOWED=NO \
+              build | xcpretty
+          fi
+        env:
+          NSUnbufferedIO: "YES"
+        continue-on-error: false
+
+      - name: Run unit tests (if any)
+        shell: bash
+        run: |
+          set -euo pipefail
+          HAS_TESTS=$(grep -R --include=\*.m --include=\*.swift -n "XCTestCase" . | wc -l | xargs)
+          if [[ "$HAS_TESTS" -gt "0" ]]; then
+            if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
+              xcodebuild \
+                -workspace "${{ steps.detect.outputs.workspace }}" \
+                -scheme "$SCHEME" \
+                -configuration "$CONFIG" \
+                -destination 'platform=macOS' \
+                CODE_SIGNING_ALLOWED=NO \
+                test | xcpretty
+            else
+              xcodebuild \
+                -project "${{ steps.detect.outputs.project }}" \
+                -scheme "$SCHEME" \
+                -configuration "$CONFIG" \
+                -destination 'platform=macOS' \
+                CODE_SIGNING_ALLOWED=NO \
+                test | xcpretty
+            fi
+          else
+            echo "No XCTest targets detected; skipping test step."
+          fi
+
+      - name: Regression tests (optional; skip if file missing)
+        shell: bash
+        run: |
+          if [[ -f "Tests/Regression/phrases.tsv" && -x "Tools/run_regression.sh" ]]; then
+            Tools/run_regression.sh Tests/Regression/phrases.tsv
+          else
+            echo "Regression harness not present yet; skipping."
+          fi
+

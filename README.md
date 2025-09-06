@@ -1,3 +1,5 @@
+![CI](https://github.com/arnabwahid/iAvro/actions/workflows/ci.yml/badge.svg?branch=dev)
+
 Installation
 ------------
 
