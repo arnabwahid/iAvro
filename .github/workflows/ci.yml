@@ -239,6 +239,16 @@ jobs:
           tail -n 200 "$SUMMARY" >> "$GITHUB_STEP_SUMMARY" || true
           echo '\`\`\`' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Compress logs (failure)
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in "$LOG_DIR"/*.log; do
+            [[ -f "$f" ]] || continue
+            gzip -9f "$f" || true
+          done
+
       - name: Upload logs (Option A fallback)
         if: failure()
         uses: actions/upload-artifact@v4

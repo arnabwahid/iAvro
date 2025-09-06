@@ -1,0 +1,42 @@
+name: Pod Maintenance
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays at 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  pod-maintenance:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Xcode problem matcher
+        run: echo "::add-matcher::.github/problem-matchers/xcodebuild.json"
+
+      - name: Install tools
+        run: |
+          gem install cocoapods --no-document
+          gem install xcpretty --no-document
+          brew update
+          brew install subversion
+
+      - name: CocoaPods repo update
+        run: |
+          pod repo update
+
+      - name: Pod install (with update)
+        run: |
+          pod install --repo-update
+
+      - name: Build to validate pods
+        env:
+          SCHEME: Avro Keyboard
+        run: |
+          if [[ -d "AvroKeyboard.xcworkspace" ]]; then
+            xcodebuild -workspace AvroKeyboard.xcworkspace -scheme "$SCHEME" -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build | xcpretty
+          else
+            xcodebuild -project AvroKeyboard.xcodeproj -scheme "$SCHEME" -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build | xcpretty
+          fi
+
