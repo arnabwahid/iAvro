@@ -1,3 +1,5 @@
+source 'https://cdn.cocoapods.org/'
+
 platform :osx, '10.11'
 
 target 'Avro Keyboard' do
