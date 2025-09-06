@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: macos-14
     env:
-      SCHEME: iAvro           # << update if your Xcode scheme differs
+      SCHEME: Avro Keyboard   # Default equals target name in this repo
+      TARGET: Avro Keyboard   # Fallback target if no shared scheme
       CONFIG: Debug
     steps:
       - name: Checkout
@@ -20,6 +21,10 @@ jobs:
         run: |
           xcodebuild -version
           sw_vers
+
+      - name: Install xcpretty
+        run: |
+          gem install xcpretty --no-document
 
       - name: Detect project or workspace
         id: detect
@@ -49,7 +54,16 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
-              build | xcpretty
+              build | xcpretty || {
+                echo "Scheme build failed; retrying with target '$TARGET'";
+                xcodebuild \
+                  -workspace "${{ steps.detect.outputs.workspace }}" \
+                  -target "$TARGET" \
+                  -configuration "$CONFIG" \
+                  -destination 'platform=macOS' \
+                  CODE_SIGNING_ALLOWED=NO \
+                  build | xcpretty;
+              }
           else
             xcodebuild \
               -project "${{ steps.detect.outputs.project }}" \
@@ -57,7 +71,16 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
-              build | xcpretty
+              build | xcpretty || {
+                echo "Scheme build failed; retrying with target '$TARGET'";
+                xcodebuild \
+                  -project "${{ steps.detect.outputs.project }}" \
+                  -target "$TARGET" \
+                  -configuration "$CONFIG" \
+                  -destination 'platform=macOS' \
+                  CODE_SIGNING_ALLOWED=NO \
+                  build | xcpretty;
+              }
           fi
         env:
           NSUnbufferedIO: "YES"
@@ -70,21 +93,30 @@ jobs:
           HAS_TESTS=$(grep -R --include=\*.m --include=\*.swift -n "XCTestCase" . | wc -l | xargs)
           if [[ "$HAS_TESTS" -gt "0" ]]; then
             if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
-              xcodebuild \
-                -workspace "${{ steps.detect.outputs.workspace }}" \
-                -scheme "$SCHEME" \
-                -configuration "$CONFIG" \
-                -destination 'platform=macOS' \
-                CODE_SIGNING_ALLOWED=NO \
-                test | xcpretty
+              # Only run tests with a scheme; if no shared scheme, skip.
+              if xcodebuild -list -workspace "${{ steps.detect.outputs.workspace }}" | grep -q "Schemes:"; then
+                xcodebuild \
+                  -workspace "${{ steps.detect.outputs.workspace }}" \
+                  -scheme "$SCHEME" \
+                  -configuration "$CONFIG" \
+                  -destination 'platform=macOS' \
+                  CODE_SIGNING_ALLOWED=NO \
+                  test | xcpretty
+              else
+                echo "No shared scheme detected; skipping XCTest run."
+              fi
             else
-              xcodebuild \
-                -project "${{ steps.detect.outputs.project }}" \
-                -scheme "$SCHEME" \
-                -configuration "$CONFIG" \
-                -destination 'platform=macOS' \
-                CODE_SIGNING_ALLOWED=NO \
-                test | xcpretty
+              if xcodebuild -list -project "${{ steps.detect.outputs.project }}" | grep -q "Schemes:"; then
+                xcodebuild \
+                  -project "${{ steps.detect.outputs.project }}" \
+                  -scheme "$SCHEME" \
+                  -configuration "$CONFIG" \
+                  -destination 'platform=macOS' \
+                  CODE_SIGNING_ALLOWED=NO \
+                  test | xcpretty
+              else
+                echo "No shared scheme detected; skipping XCTest run."
+              fi
             fi
           else
             echo "No XCTest targets detected; skipping test step."
@@ -98,4 +130,3 @@ jobs:
           else
             echo "Regression harness not present yet; skipping."
           fi
-
