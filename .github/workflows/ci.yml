@@ -14,6 +14,7 @@ jobs:
   build:
     runs-on: macos-14
     env:
+      CACHE_VERSION: v1        # bump to v2 to invalidate old caches
       SCHEME: Avro Keyboard   # Default equals target name in this repo
       TARGET: Avro Keyboard   # Fallback target if no shared scheme
       CONFIG: Debug
@@ -58,8 +59,9 @@ jobs:
             Pods
             ~/.cocoapods
             ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          key: ${{ runner.os }}-${{ env.CACHE_VERSION }}-pods-${{ hashFiles('Podfile.lock') }}
           restore-keys: |
+            ${{ runner.os }}-${{ env.CACHE_VERSION }}-pods-
             ${{ runner.os }}-pods-
 
       - name: Cache Xcode DerivedData
@@ -68,8 +70,9 @@ jobs:
         with:
           path: |
             ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-derived-${{ hashFiles('AvroKeyboard.xcodeproj/project.pbxproj', 'Podfile.lock') }}-${{ env.SCHEME }}
+          key: ${{ runner.os }}-${{ env.CACHE_VERSION }}-derived-${{ hashFiles('AvroKeyboard.xcodeproj/project.pbxproj', 'Podfile.lock') }}-${{ env.SCHEME }}
           restore-keys: |
+            ${{ runner.os }}-${{ env.CACHE_VERSION }}-derived-
             ${{ runner.os }}-derived-
 
       - name: Pod install
