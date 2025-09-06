@@ -287,15 +287,23 @@
 			name = Libraries;
 			sourceTree = "<group>";
 		};
-		DDDA97BE03464C15B5058815 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */,
-				F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
+DDDA97BE03464C15B5058815 /* Pods */ = {
+            isa = PBXGroup;
+            children = (
+                9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */,
+                F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */,
+            );
+            name = Pods;
+            sourceTree = "<group>";
+        };
+        F0A1B2C30D4E5F60718293AB /* Tests */ = {
+            isa = PBXGroup;
+            children = (
+                F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
+            );
+            path = Tests;
+            sourceTree = "<group>";
+        };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -644,13 +652,5 @@
         };
 /* End XCConfigurationList section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }
-        F0A1B2C30D4E5F60718293AB /* Tests */ = {
-            isa = PBXGroup;
-            children = (
-                F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
-            );
-            path = Tests;
-            sourceTree = "<group>";
-        };
