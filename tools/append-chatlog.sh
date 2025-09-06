@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Append text to docs/iavro_codex_chatlog.md with a timestamped divider.
+# Append text to docs/chatlog.md with a timestamped divider.
 # Sources: stdin (default), --from-file <path>, or --from-clipboard (macOS pbpaste / xclip/xsel).
 # Optional: --commit to auto git-commit the change.
 
-FILE="docs/iavro_codex_chatlog.md"
+FILE="docs/chatlog.md"
 SOURCE="stdin"
 INPUT_PATH=""
 DO_COMMIT=0
 TITLE="iAvro Forgiving Typing Project — Chat Log"
 FORCE_APPEND=0
 LABEL=""
+SUBJECT=""
 
 usage() {
   cat <<EOF
-Usage: $0 [--from-file <path> | --from-clipboard] [--label <text>] [--commit] [--force]
+Usage: $0 [--from-file <path> | --from-clipboard] [--label <text>] [--subject <text>] [--commit] [--force]
 
 Examples:
   # Append from clipboard (copy chat text first)
@@ -25,7 +26,7 @@ Examples:
   $0 --from-file tmp/chat_append.txt --label "CGE export"
 
   # Append from stdin
-  echo "My note" | $0 --label "Manual note"
+  echo "My note" | $0 --label "Manual note" --subject "Short summary"
 EOF
 }
 
@@ -41,6 +42,8 @@ while [[ $# -gt 0 ]]; do
       FORCE_APPEND=1; shift;;
     --label)
       LABEL="${2:-}"; shift 2;;
+    --subject)
+      SUBJECT="${2:-}"; shift 2;;
     --help|-h)
       usage; exit 0;;
     *)
@@ -101,6 +104,7 @@ STAMP="$(date +"%Y-%m-%d %H:%M:%S %Z")"
 CONTENT_NORM=$(printf '%s' "$CONTENT" | tr -d '\r')
 # Normalize label
 LABEL_NORM=$(printf '%s' "$LABEL" | tr -d '\r')
+SUBJECT_NORM=$(printf '%s' "$SUBJECT" | tr -d '\r')
 if command -v shasum >/dev/null 2>&1; then
   CID=$(printf '%s' "$CONTENT_NORM" | shasum -a 256 | awk '{print $1}')
 elif command -v openssl >/dev/null 2>&1; then
@@ -114,8 +118,13 @@ if [[ $FORCE_APPEND -eq 0 ]] && grep -q "^\[CID:$CID\]$" "$FILE" 2>/dev/null; th
   echo "This content (CID:$CID) is already present in $FILE; skipping."
   exit 0
 fi
+
+# Gentle reminder if no label provided
+if [[ -z "$LABEL_NORM" ]]; then
+  echo "[append-chatlog] Warning: no --label provided (e.g., 'Codex CLI', 'ChatGPT Web', 'Manual')." >&2
+fi
 {
-  echo "\n---\n\nAppended on $STAMP\n[CID:$CID]${LABEL_NORM:+ [LABEL:$LABEL_NORM]}\n\n$CONTENT_NORM\n"
+  echo "\n---\n\nAppended on $STAMP\n[CID:$CID]${LABEL_NORM:+ [LABEL:$LABEL_NORM]}\n${SUBJECT_NORM:+Subject: $SUBJECT_NORM\n}\n$CONTENT_NORM\n"
 } >> "$FILE"
 
 echo "Appended chat content to $FILE"

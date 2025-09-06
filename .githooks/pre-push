@@ -11,7 +11,7 @@ set -euo pipefail
 ROOT_DIR=$(git rev-parse --show-toplevel)
 cd "$ROOT_DIR"
 
-CHAT_FILE="docs/iavro_codex_chatlog.md"
+CHAT_FILE="docs/chatlog.md"
 PENDING_FILE="docs/pending_chat_append.txt"
 APPENDER="tools/append-chatlog.sh"
 LABEL="Pre-push"

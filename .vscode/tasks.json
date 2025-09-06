@@ -44,7 +44,9 @@
         "tools/append-chatlog.sh",
         "--from-clipboard",
         "--label",
-        "${input:chatlogLabel}"
+        "${input:chatlogLabel}",
+        "--subject",
+        "${input:chatlogSubject}"
       ],
       "problemMatcher": []
     },
@@ -57,7 +59,9 @@
         "--from-file",
         "${input:chatlogFile}",
         "--label",
-        "${input:chatlogLabel}"
+        "${input:chatlogLabel}",
+        "--subject",
+        "${input:chatlogSubject}"
       ],
       "problemMatcher": []
     },
@@ -67,7 +71,7 @@
       "command": "bash",
       "args": [
         "-lc",
-        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' && (command -v code >/dev/null && code -r docs/iavro_codex_chatlog.md || open docs/iavro_codex_chatlog.md)"
+        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' && (command -v code >/dev/null && code -r docs/chatlog.md || open docs/chatlog.md)"
       ],
       "problemMatcher": []
     },
@@ -85,6 +89,12 @@
       "type": "promptString",
       "description": "Enter a label for this chat append (e.g., Codex CLI, ChatGPT Web, Manual)",
       "default": "Manual"
+    },
+    {
+      "id": "chatlogSubject",
+      "type": "promptString",
+      "description": "Enter a short subject/summary for this append",
+      "default": ""
     },
     {
       "id": "chatlogFile",
