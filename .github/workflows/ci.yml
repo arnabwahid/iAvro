@@ -49,13 +49,38 @@ jobs:
           # Prefer workspace only if Pods are present; otherwise use project to avoid missing Pods.
           if [[ -n "$WS" && -d "Pods" && -f "Pods/Pods.xcodeproj/project.pbxproj" ]]; then
             echo "workspace=$WS" >> "$GITHUB_OUTPUT"
+            echo "workspace_abs=$PWD/$WS" >> "$GITHUB_OUTPUT"
             echo "kind=workspace" >> "$GITHUB_OUTPUT"
           elif [[ -n "$PRJ" ]]; then
             echo "project=$PRJ"   >> "$GITHUB_OUTPUT"
+            echo "project_abs=$PWD/$PRJ" >> "$GITHUB_OUTPUT"
             echo "kind=project"   >> "$GITHUB_OUTPUT"
           else
             echo "No .xcworkspace or .xcodeproj found"; exit 1
           fi
+
+      - name: Resolve scheme
+        id: scheme
+        shell: bash
+        run: |
+          set -euo pipefail
+          WANT_SCHEME="${SCHEME:-}"
+          if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
+            LIST=$(xcodebuild -list -workspace "${{ steps.detect.outputs.workspace_abs }}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+          else
+            LIST=$(xcodebuild -list -project "${{ steps.detect.outputs.project_abs }}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+          fi
+          echo "Available schemes:"; echo "$LIST"
+          SEL=""
+          if [[ -n "$WANT_SCHEME" ]] && echo "$LIST" | grep -Fxq "$WANT_SCHEME"; then
+            SEL="$WANT_SCHEME"
+          else
+            SEL=$(echo "$LIST" | head -n1 | tr -d '\r')
+          fi
+          if [[ -z "$SEL" ]]; then
+            echo "No shared schemes found"; exit 1
+          fi
+          echo "name=$SEL" >> "$GITHUB_OUTPUT"
 
       - name: Build
         shell: bash
@@ -63,32 +88,23 @@ jobs:
           set -euo pipefail
           if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
             xcodebuild \
-              -workspace "${{ steps.detect.outputs.workspace }}" \
-              -scheme "$SCHEME" \
+              -workspace "${{ steps.detect.outputs.workspace_abs }}" \
+              -scheme "${{ steps.scheme.outputs.name }}" \
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
-              build | xcpretty || {
-                echo "Scheme build failed; retrying with target '$TARGET'";
-                xcodebuild \
-                  -workspace "${{ steps.detect.outputs.workspace }}" \
-                  -target "$TARGET" \
-                  -configuration "$CONFIG" \
-                  -destination 'platform=macOS' \
-                  CODE_SIGNING_ALLOWED=NO \
-                  build | xcpretty;
-              }
+              build | xcpretty
           else
             xcodebuild \
-              -project "${{ steps.detect.outputs.project }}" \
-              -scheme "$SCHEME" \
+              -project "${{ steps.detect.outputs.project_abs }}" \
+              -scheme "${{ steps.scheme.outputs.name }}" \
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
               build | xcpretty || {
                 echo "Scheme build failed; retrying with target '$TARGET'";
                 xcodebuild \
-                  -project "${{ steps.detect.outputs.project }}" \
+                  -project "${{ steps.detect.outputs.project_abs }}" \
                   -target "$TARGET" \
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
