@@ -126,7 +126,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          HAS_TESTS=$(( (grep -R --include=\*.m --include=\*.swift -n "XCTestCase" . || true) | wc -l | xargs ))
+          HAS_TESTS=$( { grep -R --include='*.m' --include='*.swift' -n "XCTestCase" . || true; } | wc -l | tr -d '[:space:]')
           if [[ "$HAS_TESTS" -gt "0" ]]; then
             if [[ "${KIND:-}" == "workspace" ]]; then
               # Only run tests with a scheme; if no shared scheme, skip.
