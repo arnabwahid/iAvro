@@ -20,3 +20,5 @@ DerivedData
 #CocoaPods
 Pods
 /Installer
+# Internal documentation
+docs/
