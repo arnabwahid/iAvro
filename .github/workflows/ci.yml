@@ -83,14 +83,15 @@ jobs:
         run: |
           set -euo pipefail
           echo "Using CocoaPods $(pod --version)"
+          mkdir -p "$LOG_DIR"
           # First try without repo update (CDN should suffice)
-          if ! pod install; then
+          if ! pod install 2>&1 | tee "$LOG_DIR/pod_install.log"; then
             echo "pod install failed; cleaning lock/cache and retrying with repo update..."
             rm -f Podfile.lock
             rm -rf Pods
             pod cache clean --all || true
             pod repo update || true
-            pod install --repo-update --verbose
+            pod install --repo-update --verbose 2>&1 | tee -a "$LOG_DIR/pod_install.log"
           fi
 
       - name: Pod env (on failure)
