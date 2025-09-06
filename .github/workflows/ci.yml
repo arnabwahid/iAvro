@@ -30,6 +30,11 @@ jobs:
         run: |
           gem install cocoapods --no-document
 
+      - name: Install Subversion (for RegexKitLite)
+        run: |
+          brew update
+          brew install subversion
+
       - name: Pod install
         run: |
           pod install --repo-update --silent || pod install
