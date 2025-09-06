@@ -13,10 +13,11 @@ TITLE="iAvro Forgiving Typing Project — Chat Log"
 FORCE_APPEND=0
 LABEL=""
 SUBJECT=""
+OPEN_AFTER=0
 
 usage() {
   cat <<EOF
-Usage: $0 [--from-file <path> | --from-clipboard] [--label <text>] [--subject <text>] [--commit] [--force]
+Usage: $0 [--from-file <path> | --from-clipboard] [--label <text>] [--subject <text>] [--open] [--commit] [--force]
 
 Examples:
   # Append from clipboard (copy chat text first)
@@ -44,6 +45,8 @@ while [[ $# -gt 0 ]]; do
       LABEL="${2:-}"; shift 2;;
     --subject)
       SUBJECT="${2:-}"; shift 2;;
+    --open)
+      OPEN_AFTER=1; shift;;
     --help|-h)
       usage; exit 0;;
     *)
@@ -136,5 +139,14 @@ if [[ $DO_COMMIT -eq 1 ]]; then
     echo "Committed chatlog append."
   else
     echo "Not a git repo; skipping commit." >&2
+  fi
+fi
+
+# Optionally open the chatlog for review (interactive flows only)
+if [[ $OPEN_AFTER -eq 1 ]]; then
+  if command -v code >/dev/null 2>&1; then
+    code -r "$FILE" || true
+  elif [[ "$OSTYPE" == darwin* ]]; then
+    open "$FILE" || true
   fi
 fi

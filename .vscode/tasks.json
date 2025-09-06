@@ -6,14 +6,25 @@
       "label": "Append Chatlog (Clipboard)",
       "type": "shell",
       "command": "bash",
-      "args": ["tools/append-chatlog.sh", "--from-clipboard", "--commit"],
+      "args": [
+        "tools/append-chatlog.sh",
+        "--from-clipboard",
+        "--label",
+        "${input:chatlogLabel}",
+        "--subject",
+        "${input:chatlogSubject}",
+        "--open"
+      ],
       "problemMatcher": []
     },
     {
       "label": "Append Chatlog (Stdin)",
       "type": "shell",
       "command": "bash",
-      "args": ["-lc", "tools/append-chatlog.sh --commit"],
+      "args": [
+        "-lc",
+        "tools/append-chatlog.sh --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' --open"
+      ],
       "options": {
         "presentation": {
           "reveal": "always",
@@ -46,7 +57,8 @@
         "--label",
         "${input:chatlogLabel}",
         "--subject",
-        "${input:chatlogSubject}"
+        "${input:chatlogSubject}",
+        "--open"
       ],
       "problemMatcher": []
     },
@@ -61,7 +73,8 @@
         "--label",
         "${input:chatlogLabel}",
         "--subject",
-        "${input:chatlogSubject}"
+        "${input:chatlogSubject}",
+        "--open"
       ],
       "problemMatcher": []
     },
@@ -71,7 +84,7 @@
       "command": "bash",
       "args": [
         "-lc",
-        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' && (command -v code >/dev/null && code -r docs/chatlog.md || open docs/chatlog.md)"
+        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' --open"
       ],
       "problemMatcher": []
     },

@@ -38,6 +38,7 @@ Each append block adds:
 
 Appended on 2025-09-06 16:55:00 UTC
 [CID:<sha256>] [LABEL:<optional>]
+Subject: <optional subject when provided>
 
 <pasted content>
 ```
@@ -67,12 +68,15 @@ bash tools/install-hooks.sh
 
 Behavior:
 - If `docs/pending_chat_append.txt` exists and has content, it is appended (label “Pre-push”) and then removed.
-- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc` (repo root) or env, the clipboard is appended (label “Pre-push (Clipboard)”).
+- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc` (repo root) or env, the clipboard is appended (label “Pre-push (Clipboard)”) with safety checks:
+  - Skips if the clipboard content’s CID already exists in the chatlog.
+  - Skips if a 256‑char preview is already present in the chatlog (tail containment check).
 - After appending, the hook stages `docs/chatlog.md` so it’s included in your push if committed.
 
 Notes:
 - Hooks are local; they don’t travel with pushes. The installer sets `core.hooksPath=.githooks` in your local repo config.
 - The hook is non-interactive and safe to ignore if you don’t use the pending/clipboard features.
+- Recommended defaults: Use queued file appends or the VS Code tasks; keep clipboard auto‑append disabled unless you need it.
 
 ## Notes & Recommendations
 

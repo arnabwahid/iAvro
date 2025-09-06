@@ -32,8 +32,42 @@ append_from_file() {
 
 append_from_clipboard() {
   if command -v pbpaste >/dev/null 2>&1 || command -v xclip >/dev/null 2>&1 || command -v xsel >/dev/null 2>&1; then
-    bash "$APPENDER" --from-clipboard --label "$LABEL (Clipboard)" || true
-    git add "$CHAT_FILE" || true
+    TMP_CLIP=$(mktemp)
+    # capture clipboard and normalize
+    if command -v pbpaste >/dev/null 2>&1; then
+      pbpaste | tr -d '\r' > "$TMP_CLIP"
+    elif command -v xclip >/dev/null 2>&1; then
+      xclip -o -selection clipboard | tr -d '\r' > "$TMP_CLIP"
+    else
+      xsel --clipboard --output | tr -d '\r' > "$TMP_CLIP"
+    fi
+
+    if [[ -s "$TMP_CLIP" ]]; then
+      # Skip if exact CID already present (idempotent path)
+      if command -v shasum >/dev/null 2>&1; then
+        CID=$(shasum -a 256 "$TMP_CLIP" | awk '{print $1}')
+      elif command -v openssl >/dev/null 2>&1; then
+        CID=$(openssl dgst -sha256 -r "$TMP_CLIP" | awk '{print $1}')
+      else
+        CID=""
+      fi
+      if [[ -n "$CID" && -f "$CHAT_FILE" ]] && grep -q "^\[CID:$CID\]$" "$CHAT_FILE"; then
+        echo "[pre-push] Clipboard content already recorded (CID:$CID); skipping."
+        rm -f "$TMP_CLIP"; return
+      fi
+      # Tail containment check: if a preview chunk is already in chatlog, skip
+      if [[ -f "$CHAT_FILE" ]]; then
+        PREVIEW=$(head -c 256 "$TMP_CLIP")
+        if [[ -n "$PREVIEW" ]] && grep -Fq -- "$PREVIEW" "$CHAT_FILE"; then
+          echo "[pre-push] Clipboard content appears already present in chatlog; skipping."
+          rm -f "$TMP_CLIP"; return
+        fi
+      fi
+      # Append from file to avoid re-reading clipboard in appender
+      bash "$APPENDER" --from-file "$TMP_CLIP" --label "$LABEL (Clipboard)" || true
+      git add "$CHAT_FILE" || true
+    fi
+    rm -f "$TMP_CLIP" || true
   fi
 }
 
