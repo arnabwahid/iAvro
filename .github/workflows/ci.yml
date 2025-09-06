@@ -30,6 +30,9 @@ jobs:
       - name: Enable Xcode problem matcher
         run: echo "::add-matcher::.github/problem-matchers/xcodebuild.json"
 
+      - name: Enable Linker problem matcher
+        run: echo "::add-matcher::.github/problem-matchers/linker.json"
+
       - name: Install xcpretty
         run: |
           gem install xcpretty --no-document

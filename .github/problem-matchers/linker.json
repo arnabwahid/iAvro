@@ -1,0 +1,34 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "linker-ld",
+      "pattern": [
+        {
+          "regexp": "^ld: (warning|error):\\s+(.*)$",
+          "severity": 1,
+          "message": 2
+        }
+      ]
+    },
+    {
+      "owner": "linker-clang",
+      "pattern": [
+        {
+          "regexp": "^(clang):\\s+(error):\\s+(.*)$",
+          "severity": 2,
+          "message": 3
+        }
+      ]
+    },
+    {
+      "owner": "linker-undefined",
+      "pattern": [
+        {
+          "regexp": "^(.*Undefined symbols for architecture\\s+.+)$",
+          "message": 1
+        }
+      ]
+    }
+  ]
+}
+
