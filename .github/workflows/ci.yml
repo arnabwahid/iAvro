@@ -93,6 +93,10 @@ jobs:
             pod install --repo-update --verbose
           fi
 
+      - name: Pod env (on failure)
+        if: failure()
+        run: pod env || true
+
       - name: Detect project or workspace
         shell: bash
         run: |
