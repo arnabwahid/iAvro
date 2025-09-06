@@ -1,6 +1,6 @@
 # Chat Log Append — Usage & Tips
 
-This workspace includes a helper script and VS Code tasks to append new conversation text to `docs/iavro_forgiving_typing_chatlog.md` while preserving continuity and avoiding exact duplicates.
+This workspace includes a helper script and VS Code tasks to append new conversation text to `docs/iavro_codex_chatlog.md` while preserving continuity and avoiding exact duplicates.
 
 Note: `docs/` and `tools/append-chatlog.sh` are ignored by Git in this workspace; they remain local and are not pushed to GitHub. The VS Code config under `.vscode/` is versioned so these tasks/keybindings travel with the repo.
 
@@ -68,7 +68,7 @@ bash tools/install-hooks.sh
 Behavior:
 - If `docs/pending_chat_append.txt` exists and has content, it is appended (label “Pre-push”) and then removed.
 - If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc` (repo root) or env, the clipboard is appended (label “Pre-push (Clipboard)”).
-- After appending, the hook stages `docs/iavro_forgiving_typing_chatlog.md` so it’s included in your push if committed.
+- After appending, the hook stages `docs/iavro_codex_chatlog.md` so it’s included in your push if committed.
 
 Notes:
 - Hooks are local; they don’t travel with pushes. The installer sets `core.hooksPath=.githooks` in your local repo config.

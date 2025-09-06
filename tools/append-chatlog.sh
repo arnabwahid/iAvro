@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Append text to docs/iavro_forgiving_typing_chatlog.md with a timestamped divider.
+# Append text to docs/iavro_codex_chatlog.md with a timestamped divider.
 # Sources: stdin (default), --from-file <path>, or --from-clipboard (macOS pbpaste / xclip/xsel).
 # Optional: --commit to auto git-commit the change.
 
-FILE="docs/iavro_forgiving_typing_chatlog.md"
+FILE="docs/iavro_codex_chatlog.md"
 SOURCE="stdin"
 INPUT_PATH=""
 DO_COMMIT=0

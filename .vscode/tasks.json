@@ -67,7 +67,7 @@
       "command": "bash",
       "args": [
         "-lc",
-        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' && (command -v code >/dev/null && code -r docs/iavro_forgiving_typing_chatlog.md || open docs/iavro_forgiving_typing_chatlog.md)"
+        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' && (command -v code >/dev/null && code -r docs/iavro_codex_chatlog.md || open docs/iavro_codex_chatlog.md)"
       ],
       "problemMatcher": []
     },
