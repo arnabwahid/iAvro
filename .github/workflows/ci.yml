@@ -27,6 +27,9 @@ jobs:
         run: |
           rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
 
+      - name: Enable Xcode problem matcher
+        run: echo "::add-matcher::.github/problem-matchers/xcodebuild.json"
+
       - name: Install xcpretty
         run: |
           gem install xcpretty --no-document
