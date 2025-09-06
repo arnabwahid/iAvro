@@ -40,35 +40,31 @@ jobs:
           pod install --repo-update --silent || pod install
 
       - name: Detect project or workspace
-        id: detect
         shell: bash
         run: |
           set -euo pipefail
-          WS=$(ls -1 *.xcworkspace 2>/dev/null | head -n1 || true)
-          PRJ=$(ls -1 *.xcodeproj    2>/dev/null | head -n1 || true)
-          # Prefer workspace only if Pods are present; otherwise use project to avoid missing Pods.
-          if [[ -n "$WS" && -d "Pods" && -f "Pods/Pods.xcodeproj/project.pbxproj" ]]; then
-            echo "workspace=$WS" >> "$GITHUB_OUTPUT"
-            echo "workspace_abs=$PWD/$WS" >> "$GITHUB_OUTPUT"
-            echo "kind=workspace" >> "$GITHUB_OUTPUT"
-          elif [[ -n "$PRJ" ]]; then
-            echo "project=$PRJ"   >> "$GITHUB_OUTPUT"
-            echo "project_abs=$PWD/$PRJ" >> "$GITHUB_OUTPUT"
-            echo "kind=project"   >> "$GITHUB_OUTPUT"
+          ROOT=$(pwd -P)
+          WS="AvroKeyboard.xcworkspace"
+          PRJ="AvroKeyboard.xcodeproj"
+          if [[ -d "$WS" && -d "Pods" && -f "Pods/Pods.xcodeproj/project.pbxproj" ]]; then
+            echo "KIND=workspace" >> "$GITHUB_ENV"
+            echo "WORKSPACE=$ROOT/$WS" >> "$GITHUB_ENV"
+          elif [[ -d "$PRJ" ]]; then
+            echo "KIND=project" >> "$GITHUB_ENV"
+            echo "PROJECT=$ROOT/$PRJ" >> "$GITHUB_ENV"
           else
-            echo "No .xcworkspace or .xcodeproj found"; exit 1
+            echo "No Xcode workspace or project found"; ls -la; exit 1
           fi
 
       - name: Resolve scheme
-        id: scheme
         shell: bash
         run: |
           set -euo pipefail
           WANT_SCHEME="${SCHEME:-}"
-          if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
-            LIST=$(xcodebuild -list -workspace "${{ steps.detect.outputs.workspace_abs }}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+          if [[ "${KIND:-}" == "workspace" ]]; then
+            LIST=$(xcodebuild -list -workspace "${WORKSPACE}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
           else
-            LIST=$(xcodebuild -list -project "${{ steps.detect.outputs.project_abs }}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+            LIST=$(xcodebuild -list -project "${PROJECT}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
           fi
           echo "Available schemes:"; echo "$LIST"
           SEL=""
@@ -80,31 +76,31 @@ jobs:
           if [[ -z "$SEL" ]]; then
             echo "No shared schemes found"; exit 1
           fi
-          echo "name=$SEL" >> "$GITHUB_OUTPUT"
+          echo "SCHEME_RESOLVED=$SEL" >> "$GITHUB_ENV"
 
       - name: Build
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
+          if [[ "${KIND:-}" == "workspace" ]]; then
             xcodebuild \
-              -workspace "${{ steps.detect.outputs.workspace_abs }}" \
-              -scheme "${{ steps.scheme.outputs.name }}" \
+              -workspace "${WORKSPACE}" \
+              -scheme "${SCHEME_RESOLVED}" \
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
               build | xcpretty
           else
             xcodebuild \
-              -project "${{ steps.detect.outputs.project_abs }}" \
-              -scheme "${{ steps.scheme.outputs.name }}" \
+              -project "${PROJECT}" \
+              -scheme "${SCHEME_RESOLVED}" \
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
               build | xcpretty || {
                 echo "Scheme build failed; retrying with target '$TARGET'";
                 xcodebuild \
-                  -project "${{ steps.detect.outputs.project_abs }}" \
+                  -project "${PROJECT}" \
                   -target "$TARGET" \
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
@@ -122,12 +118,12 @@ jobs:
           set -euo pipefail
           HAS_TESTS=$(grep -R --include=\*.m --include=\*.swift -n "XCTestCase" . | wc -l | xargs)
           if [[ "$HAS_TESTS" -gt "0" ]]; then
-            if [[ "${{ steps.detect.outputs.kind }}" == "workspace" ]]; then
+            if [[ "${KIND:-}" == "workspace" ]]; then
               # Only run tests with a scheme; if no shared scheme, skip.
-              if xcodebuild -list -workspace "${{ steps.detect.outputs.workspace }}" | grep -q "Schemes:"; then
+              if xcodebuild -list -workspace "${WORKSPACE}" | grep -q "Schemes:"; then
                 xcodebuild \
-                  -workspace "${{ steps.detect.outputs.workspace }}" \
-                  -scheme "$SCHEME" \
+                  -workspace "${WORKSPACE}" \
+                  -scheme "${SCHEME_RESOLVED}" \
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
@@ -136,10 +132,10 @@ jobs:
                 echo "No shared scheme detected; skipping XCTest run."
               fi
             else
-              if xcodebuild -list -project "${{ steps.detect.outputs.project }}" | grep -q "Schemes:"; then
+              if xcodebuild -list -project "${PROJECT}" | grep -q "Schemes:"; then
                 xcodebuild \
-                  -project "${{ steps.detect.outputs.project }}" \
-                  -scheme "$SCHEME" \
+                  -project "${PROJECT}" \
+                  -scheme "${SCHEME_RESOLVED}" \
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
