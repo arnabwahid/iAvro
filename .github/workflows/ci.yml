@@ -267,8 +267,8 @@ jobs:
             gzip -9f "$f" || true
           done
 
-      - name: Upload logs (Option A fallback)
-        if: failure()
+      - name: Upload logs (compressed)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ci-logs
