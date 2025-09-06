@@ -62,16 +62,28 @@ jobs:
           set -euo pipefail
           WANT_SCHEME="${SCHEME:-}"
           if [[ "${KIND:-}" == "workspace" ]]; then
-            LIST=$(xcodebuild -list -workspace "${WORKSPACE}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+            LIST=$(xcodebuild -list -workspace "${WORKSPACE}" 2>/dev/null \
+              | sed -n '/Schemes:/,$p' \
+              | tail -n +2 \
+              | sed 's/\r$//' \
+              | sed 's/^\s\+//; s/\s\+$//' \
+              | sed '/^$/d')
           else
-            LIST=$(xcodebuild -list -project "${PROJECT}" 2>/dev/null | sed -n '/Schemes:/,$p' | tail -n +2 | sed 's/^\s\+//; s/\r$//')
+            LIST=$(xcodebuild -list -project "${PROJECT}" 2>/dev/null \
+              | sed -n '/Schemes:/,$p' \
+              | tail -n +2 \
+              | sed 's/\r$//' \
+              | sed 's/^\s\+//; s/\s\+$//' \
+              | sed '/^$/d')
           fi
-          echo "Available schemes:"; echo "$LIST"
+          echo "Available schemes:"; printf '%s\n' "$LIST"
           SEL=""
-          if [[ -n "$WANT_SCHEME" ]] && echo "$LIST" | grep -Fxq "$WANT_SCHEME"; then
-            SEL="$WANT_SCHEME"
+          # Trim WANT_SCHEME for safety
+          WANT_SCHEME_TRIM=$(printf '%s' "$WANT_SCHEME" | sed 's/^\s\+//; s/\s\+$//')
+          if [[ -n "$WANT_SCHEME_TRIM" ]] && printf '%s\n' "$LIST" | grep -Fxq "$WANT_SCHEME_TRIM"; then
+            SEL="$WANT_SCHEME_TRIM"
           else
-            SEL=$(echo "$LIST" | head -n1 | tr -d '\r')
+            SEL=$(printf '%s\n' "$LIST" | head -n1 | sed 's/^\s\+//; s/\s\+$//')
           fi
           if [[ -z "$SEL" ]]; then
             echo "No shared schemes found"; exit 1
