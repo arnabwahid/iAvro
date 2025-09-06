@@ -42,9 +42,10 @@ jobs:
         run: |
           gem install xcpretty --no-document
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods (pinned)
         run: |
-          gem install cocoapods --no-document
+          gem install cocoapods -v 1.13.0 --no-document
+          pod --version
 
       - name: Install Subversion (for RegexKitLite)
         run: |
@@ -77,15 +78,19 @@ jobs:
 
       - name: Pod install
         shell: bash
+        env:
+          COCOAPODS_DISABLE_STATS: "true"
         run: |
           set -euo pipefail
-          pod repo update
-          if ! pod install --repo-update; then
-            echo "pod install failed; cleaning lock/cache and retrying..."
+          echo "Using CocoaPods $(pod --version)"
+          # First try without repo update (CDN should suffice)
+          if ! pod install; then
+            echo "pod install failed; cleaning lock/cache and retrying with repo update..."
             rm -f Podfile.lock
             rm -rf Pods
             pod cache clean --all || true
-            pod install --repo-update
+            pod repo update || true
+            pod install --repo-update --verbose
           fi
 
       - name: Detect project or workspace
