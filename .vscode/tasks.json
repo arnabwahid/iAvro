@@ -12,6 +12,13 @@
       "problemMatcher": []
     },
     {
+      "label": "Reset Learned Context",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/reset-context.sh"],
+      "problemMatcher": []
+    },
+    {
       "label": "Build & Test (xcodebuild)",
       "type": "shell",
       "command": "bash",
