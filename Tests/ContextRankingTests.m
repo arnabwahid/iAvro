@@ -39,4 +39,20 @@
     XCTAssertEqualObjects(out[0], curr, @"Observed bigram should be boosted to front");
 }
 
+- (void)testPersistenceWritesBigramsToUserDefaults {
+    // Clear any prior data
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ContextRankingBigrams"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSString *prev = @"alpha";
+    NSString *next = @"beta";
+    [ContextRanking recordCommittedToken:prev];
+    [ContextRanking recordCommittedToken:next];
+    NSDictionary *saved = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"ContextRankingBigrams"];
+    XCTAssertNotNil(saved);
+    NSDictionary *nexts = saved[prev];
+    XCTAssertTrue([nexts isKindOfClass:[NSDictionary class]]);
+    NSNumber *cnt = nexts[next];
+    XCTAssertTrue(cnt != nil && cnt.integerValue >= 1);
+}
+
 @end
