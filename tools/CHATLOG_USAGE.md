@@ -1,6 +1,6 @@
 # Chat Log — Session‑Based Workflow (Default)
 
-This repo uses a session‑based workflow to capture conversations and keep a clean, merge‑friendly history. Verbatim text is filed as timestamped session files, and the consolidated chatlog is generated from these sessions on demand. An alternate “immediate append” path is still available.
+This repo uses a session‑based workflow to capture conversations and keep a clean, merge‑friendly history. Verbatim text is filed as timestamped session files, and the consolidated chatlog is generated from these sessions on demand.
 
 Note: The consolidated chatlog (`docs/chatlog.md`) is regenerated from session files; do not edit it by hand. In this repo, `docs/chatlog.md` is no longer tracked by Git; rebuild it locally from sessions when needed. The VS Code config under `.vscode/` is versioned so these tasks/keybindings travel with the repo.
 
@@ -57,6 +57,45 @@ Notes:
 - Keybindings: `.vscode/keybindings.json`
 
 These live in the repo for consistency across machines. Adjust locally if they conflict with your setup.
+
+## Tasks & Keybindings
+
+Available VS Code tasks (labels as seen in the Command Palette):
+
+- New Session CC: composite; runs “New Session (from continue chat)” then “Build Chatlog …”. Keybinding: cmd+alt+shift+n.
+- New Session (from continue chat): consumes `docs/continue_chat.txt`, creates `docs/sessions/<timestamp>-session.md` and marker `docs/continue_chat`.
+- Build Chatlog (sessions → chatlog.md): rebuilds `docs/chatlog.md` from sessions (overwrites file).
+- Show Session Context: prints latest session header/tail, chatlog tail, and “Next (on resume)” from `docs/export.md`.
+- Open Latest Session: opens newest `docs/sessions/*-session.md` (falls back to printing the first 40 lines).
+- Open Export (Next on resume): opens `docs/export.md` at the “Next (on resume)” section when possible.
+- Install Git Hooks (pre-push chatlog): installs `.githooks` as the repo’s hook path.
+- Check Last Build: fetches and summarizes latest CI run (requires `gh` configured).
+- Fetch Latest CI Logs (dev): downloads CI artifacts into `./ci_logs/`.
+- Open Latest CI Summary: opens the most recent `ci_logs/**/ci_summary.txt` if present.
+
+Keybindings are defined in `.vscode/keybindings.json`. By default only “New Session CC” is bound to cmd+alt+shift+n.
+
+## Makefile
+
+Common targets for CLI usage:
+
+- make session: run the session conversion (`tools/new-session-from-continue-chat.sh`).
+- make chatlog: rebuild `docs/chatlog.md` from sessions.
+- make session-cc: run both of the above (same effect as the composite task).
+- make context: print the session/chatlog/export summary (no writes).
+- make check-build: fetch and summarize the latest CI run for `dev`.
+- make hooks: install the pre-push hook.
+
+Examples:
+
+```
+# Add text then create session + rebuild
+echo "…" > docs/continue_chat.txt
+make session-cc
+
+# Just inspect where to resume
+make context
+```
 
 ## Subjects, Labels, and Tags (Best Practices)
 - Subject: add a one‑line summary under the header (≤ 80 chars). Examples:
