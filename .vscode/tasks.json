@@ -111,6 +111,27 @@
         "SUMMARY=$(ls -1 ci_logs/**/ci_summary.txt 2>/dev/null | head -n1 || true); if [[ -n $SUMMARY ]]; then (command -v code >/dev/null && code -r \"$SUMMARY\") || ([[ $OSTYPE == darwin* ]] && open \"$SUMMARY\") || cat \"$SUMMARY\"; else echo 'No summary found. Run \"Fetch Latest CI Logs (dev)\" first.'; fi"
       ],
       "problemMatcher": []
+    },
+    {
+      "label": "Check Last Build",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/check-last-build.sh", "dev"],
+      "problemMatcher": []
+    },
+    {
+      "label": "New Session (from pending)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/new-session-from-pending.sh"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Chatlog (sessions → chatlog.md)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/build-chatlog.sh"],
+      "problemMatcher": []
     }
   ],
   "inputs": [

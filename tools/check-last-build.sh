@@ -15,22 +15,21 @@ if ! command -v gh >/dev/null 2>&1; then
 fi
 
 echo "Resolving latest run on branch '$BRANCH' ..."
-# Query fields without requiring the gh-jq extension
-RUN_ID=$(gh run list --branch "$BRANCH" --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
-if [[ -z "${RUN_ID:-}" || "$RUN_ID" == "null" ]]; then
+# Single query for all fields
+TSV=$(gh run list --branch "$BRANCH" --limit 1 \
+  --json databaseId,status,conclusion,headSha,displayTitle,name \
+  --jq '.[0] | [ .databaseId, .status, (.conclusion // "n/a"), .headSha, (.displayTitle // "n/a"), (.name // "n/a") ] | @tsv' 2>/dev/null || true)
+if [[ -z "${TSV:-}" ]]; then
   echo "No runs found on branch '$BRANCH'." >&2
   exit 3
 fi
-STATUS=$(gh run list --branch "$BRANCH" --limit 1 --json status --jq '.[0].status' 2>/dev/null || echo n/a)
-CONCLUSION=$(gh run list --branch "$BRANCH" --limit 1 --json conclusion --jq '.[0].conclusion' 2>/dev/null || echo n/a)
-SHA=$(gh run list --branch "$BRANCH" --limit 1 --json headSha --jq '.[0].headSha' 2>/dev/null || echo n/a)
-TITLE=$(gh run list --branch "$BRANCH" --limit 1 --json displayTitle --jq '.[0].displayTitle' 2>/dev/null || echo n/a)
-NAME=$(gh run list --branch "$BRANCH" --limit 1 --json name --jq '.[0].name' 2>/dev/null || echo n/a)
+IFS=$'\t' read -r RUN_ID STATUS CONCLUSION SHA TITLE NAME <<<"$TSV"
 
 echo "Run: $RUN_ID | $NAME — $TITLE"
 echo "Status: $STATUS | Conclusion: ${CONCLUSION:-n/a} | SHA: $SHA"
 
-OUTDIR="ci_logs"
+ROOT="ci_logs"
+OUTDIR="$ROOT/run-$RUN_ID"
 mkdir -p "$OUTDIR"
 echo "Downloading artifact 'ci-logs' from run $RUN_ID into $OUTDIR ..."
 gh run download "$RUN_ID" --name ci-logs --dir "$OUTDIR"
@@ -56,4 +55,22 @@ else
   echo "No ci_summary.txt found under $OUTDIR; artifact may be missing a summary."
 fi
 
-echo "Done. Logs under: $OUTDIR/ci-logs"
+if [[ -f "$SUMMARY" ]]; then
+  cp -f "$SUMMARY" "$ROOT/ci_summary.txt" || true
+fi
+for gz in build.log.gz pod_install.log.gz; do
+  if [[ -f "$OUTDIR/ci-logs/$gz" ]]; then
+    cp -f "$OUTDIR/ci-logs/$gz" "$ROOT/$gz" || true
+  fi
+done
+
+echo "Done. Logs under: $OUTDIR/ci-logs (latest pointers in $ROOT/)"
+
+# Determine build result and report
+if [[ "${CONCLUSION:-}" == "success" ]]; then
+  echo "Result: Build is GREEN (run $RUN_ID, sha $SHA)."
+  exit 0
+else
+  echo "Result: Build FAILED or not successful (status=$STATUS, conclusion=${CONCLUSION:-n/a})."
+  echo "Next: Investigate ci_summary.txt and logs (pod_install.log, build.log) to find the cause, propose a fix, apply changes, and push."
+fi

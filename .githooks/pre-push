@@ -14,6 +14,8 @@ cd "$ROOT_DIR"
 CHAT_FILE="docs/chatlog.md"
 PENDING_FILE="docs/pending_chat_append.txt"
 APPENDER="tools/append-chatlog.sh"
+NEW_SESSION="tools/new-session-from-pending.sh"
+BUILD_CHATLOG="tools/build-chatlog.sh"
 LABEL="Pre-push"
 
 # Load optional config
@@ -24,9 +26,10 @@ fi
 append_from_file() {
   local src="$1"
   if [[ -s "$src" ]]; then
-    bash "$APPENDER" --from-file "$src" --label "$LABEL" || true
-    rm -f "$src" || true
-    git add "$CHAT_FILE" || true
+    # Move pending into a session and rebuild chatlog from sessions
+    bash "$NEW_SESSION" || true
+    bash "$BUILD_CHATLOG" || true
+    git add "$CHAT_FILE" docs/sessions || true
   fi
 }
 
@@ -63,9 +66,11 @@ append_from_clipboard() {
           rm -f "$TMP_CLIP"; return
         fi
       fi
-      # Append from file to avoid re-reading clipboard in appender
-      bash "$APPENDER" --from-file "$TMP_CLIP" --label "$LABEL (Clipboard)" || true
-      git add "$CHAT_FILE" || true
+      # Write clipboard into pending and adopt session-based flow
+      cat "$TMP_CLIP" > "$PENDING_FILE"
+      bash "$NEW_SESSION" || true
+      bash "$BUILD_CHATLOG" || true
+      git add "$CHAT_FILE" docs/sessions || true
     fi
     rm -f "$TMP_CLIP" || true
   fi

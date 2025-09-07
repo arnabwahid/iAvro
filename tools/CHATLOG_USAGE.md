@@ -1,44 +1,38 @@
-# Chat Log Append — Usage & Tips
+# Chat Log — Session‑Based Workflow (Default)
 
-This workspace includes a helper script and VS Code tasks to append new conversation text to `docs/chatlog.md` while preserving continuity and avoiding exact duplicates.
+This repo uses a session‑based workflow to capture conversations and keep a clean, merge‑friendly history. Verbatim text is filed as timestamped session files, and the consolidated chatlog is generated from these sessions on demand. An alternate “immediate append” path is still available.
 
 Note: `docs/` and `tools/append-chatlog.sh` are ignored by Git in this workspace; they remain local and are not pushed to GitHub. The VS Code config under `.vscode/` is versioned so these tasks/keybindings travel with the repo.
 
-## Quick Start
+## Quick Start (Default)
+1) Save verbatim text to `docs/pending_chat_append.txt`.
+2) Run task “New Session (from pending)” → moves content to `docs/sessions/YYYYMMDD-HHMMSS-session.md` and creates a blank `docs/pending_chat_append` marker for next time. Any overlapping prefix that already exists at the end of `docs/chatlog.md` is automatically trimmed to avoid duplicates.
+3) Run task “Build Chatlog (sessions → chatlog.md)” → rebuilds `docs/chatlog.md` by concatenating all session files in chronological order.
+4) Review `docs/chatlog.md` and commit.
 
-- Command Palette → “Tasks: Run Task” → pick one:
-  - Append Chatlog (Clipboard — Codex CLI)
-  - Append Chatlog (Clipboard — ChatGPT Web)
-  - Append Chatlog (Clipboard — Prompt Label)
-  - Append Chatlog (From File — Prompt Path & Label)
-  - Append Chatlog (Clipboard)
-  - Append Chatlog (Stdin)
+Benefits: avoids merge conflicts; per‑session diffs are small and easy to review; consolidated log is reproducible.
 
-- Keybindings (macOS defaults here; adjust as desired):
-  - Codex CLI clipboard → `cmd+alt+shift+l`
-  - ChatGPT Web clipboard → `cmd+alt+shift+w`
+## Alternate Flow — Immediate Append
+Use when you want to append a single block directly to `docs/chatlog.md` without creating a session file.
 
-To append and immediately open the chatlog in VS Code:
-- Task: “Append & Open Chatlog (Clipboard — Prompt Label)”
+- Task: “Append Chatlog (From File — Prompt Path & Label)”
+  - Path: `docs/pending_chat_append.txt` (or any file)
+  - Label: e.g., “ChatGPT Web” or “Codex CLI”
+  - Subject: short summary of the append
+  - The script appends a block with timestamp, `[CID:<sha256>]` for dedupe, `[LABEL:…]`, and `Subject:`. It opens the file on completion.
 
-## Script Usage
+Dedupe: The appender computes a content hash (CID) and skips exact duplicates. Labels/subjects/timestamps do not affect dedupe.
 
 Script: `tools/append-chatlog.sh`
 
-- Clipboard: `bash tools/append-chatlog.sh --from-clipboard --label "Codex CLI"`
-- From file: `bash tools/append-chatlog.sh --from-file /path/to.txt --label "CGE export"`
-- From stdin: `echo "text" | bash tools/append-chatlog.sh --label "Manual"`
-- Force append (skip duplicate check): add `--force`
-- Optional commit: add `--commit` (docs/ is ignored; commit will effectively be a no‑op unless other files changed)
-
-Each append block adds:
+Each append block adds (example):
 
 ```
 ---
 
 Appended on 2025-09-06 16:55:00 UTC
 [CID:<sha256>] [LABEL:<optional>]
-Subject: <optional subject when provided>
+Subject: <optional subject>
 
 <pasted content>
 ```
@@ -58,32 +52,28 @@ Subject: <optional subject when provided>
 - It runs only when you invoke it (via a VS Code task, keybinding, or manual shell command). There is no background or scheduled run.
 - You can create your own automation (e.g., a local cron or Shortcut) to call the script periodically if desired.
 
-### Optional: Pre-Push Git Hook (local)
-
-This repo includes a local pre‑push hook template at `.githooks/pre-push`. Install it once per clone:
+## Git Hook (Pre‑Push) — Session Flow by Default
+Install once per clone:
 
 ```
 bash tools/install-hooks.sh
 ```
 
 Behavior:
-- If `docs/pending_chat_append.txt` exists and has content, it is appended (label “Pre-push”) and then removed.
-- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc` (repo root) or env, the clipboard is appended (label “Pre-push (Clipboard)”) with safety checks:
-  - Skips if the clipboard content’s CID already exists in the chatlog.
-  - Skips if a 256‑char preview is already present in the chatlog (tail containment check).
-- After appending, the hook stages `docs/chatlog.md` so it’s included in your push if committed.
+- If `docs/pending_chat_append.txt` has content, the hook converts it into a timestamped session file, rebuilds `docs/chatlog.md` from sessions, and stages both `docs/chatlog.md` and `docs/sessions/`.
+- A blank `docs/pending_chat_append` marker is created for easy discovery.
+- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc`, the clipboard is written to `pending_chat_append.txt`, then the same session → build flow runs (with CID and preview containment guards).
 
 Notes:
 - Hooks are local; they don’t travel with pushes. The installer sets `core.hooksPath=.githooks` in your local repo config.
 - The hook is non-interactive and safe to ignore if you don’t use the pending/clipboard features.
 - Recommended defaults: Use queued file appends or the VS Code tasks; keep clipboard auto‑append disabled unless you need it.
 
-## Notes & Recommendations
-
-- Keep the original exported chats unchanged when possible; append new sections using the script to maintain a clean history.
-- If you manually edit old sections and later append the same content again, duplicate detection may still work (as long as the original `[CID:…]` marker remains). If you remove or edit that marker, the same content could append again.
-- Labels do not participate in duplicate checking. They’re metadata for humans.
-- The script normalizes line endings (CR → LF) before hashing to avoid platform differences causing false mismatches.
+## Files & Conventions
+- Consolidated log: `docs/chatlog.md` (rebuilt; do not edit by hand)
+- Session files: `docs/sessions/YYYYMMDD‑HHMMSS-session.md` (immutable once created)
+- Pending buffer: `docs/pending_chat_append.txt` (consumed) and `docs/pending_chat_append` (blank marker)
+- Working context (decisions, highlights): `docs/export.md` (rolling, curated; not a transcript)
 
 ## VS Code Config
 
@@ -91,3 +81,15 @@ Notes:
 - Keybindings: `.vscode/keybindings.json`
 
 These live in the repo for consistency across machines. Adjust locally if they conflict with your setup.
+
+## Subjects, Labels, and Tags (Best Practices)
+- Subject: add a one‑line summary under the header (≤ 80 chars). Examples:
+  - `Subject: CI: fix CocoaPods install and raise macOS target`
+  - `Subject: Phase A kickoff: Normalizer scaffold`
+- Label: indicate the source or channel. Examples: `Codex CLI`, `ChatGPT Web`, `Manual`, `PR Review`.
+- Tags (inline in the first lines of content) help later search:
+  - `[TOPIC:CI]`, `[TOPIC:Phase A]`, `[TOPIC:IME]`
+  - `[PHASE:A]`, `[PHASE:Docs]`, `[PHASE:Infra]`
+  - `[DECISION]` for choices made; `[TODO]` for follow‑ups
+
+We will update this documentation after each phase and whenever new automation or tools land, to keep conventions accurate and discoverable.
