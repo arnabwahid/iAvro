@@ -62,6 +62,7 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Confirm CI scheme detection uses `Avro Keyboard` (shared scheme committed)
 
 ## TODO / Reminders
+- Commit Podfile.lock: run `pod install` locally to generate it and commit to lock pod versions (CI warns if missing).
 - If we observe duplicate lines when importing large verbatim transcripts, tune overlap trimming in `tools/new-session-from-continue-chat.sh` via `MAX_OVERLAP_LINES`/`MIN_OVERLAP_LINES` (defaults 200/10).
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
 

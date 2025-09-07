@@ -13,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: macos-13
+    # Optionally pin Xcode explicitly to reduce toolchain drift
+    # - Uses default Xcode on macOS-13 (15.2) if not set up below
     env:
       CACHE_VERSION: v1        # bump to v2 to invalidate old caches
       SCHEME: Avro Keyboard   # Default equals target name in this repo
@@ -28,9 +30,24 @@ jobs:
           xcodebuild -version
           sw_vers
 
+      - name: Setup Xcode (optional pin)
+        if: ${{ always() }}
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.2'
+
       - name: Prepare logs directory
         run: |
           rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
+
+      - name: Check Podfile.lock presence
+        shell: bash
+        run: |
+          if [[ -f Podfile.lock ]]; then
+            echo "Found Podfile.lock (recommended to commit for reproducibility)."
+          else
+            echo "WARNING: Podfile.lock is missing. Commit it to lock pod versions." >&2
+          fi
 
       - name: Enable Xcode problem matcher
         run: echo "::add-matcher::.github/problem-matchers/xcodebuild.json"
@@ -48,9 +65,16 @@ jobs:
           pod --version
 
       - name: Install Subversion (for RegexKitLite)
+        shell: bash
         run: |
-          brew update
-          brew install subversion
+          set -euo pipefail
+          if command -v svn >/dev/null 2>&1; then
+            echo "svn already installed: $(svn --version --quiet)"
+          else
+            echo "Installing Subversion via Homebrew (no auto-update)"
+            export HOMEBREW_NO_AUTO_UPDATE=1
+            brew install subversion
+          fi
 
       - name: Cache CocoaPods
         id: pods_cache
@@ -161,6 +185,7 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
+              -resultBundlePath "$LOG_DIR/build.xcresult" \
               build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty
           else
             xcodebuild \
@@ -169,6 +194,7 @@ jobs:
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
               CODE_SIGNING_ALLOWED=NO \
+              -resultBundlePath "$LOG_DIR/build.xcresult" \
               build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty || {
                 echo "Scheme build failed; retrying with target '$TARGET'";
                 xcodebuild \
@@ -177,6 +203,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
+                  -resultBundlePath "$LOG_DIR/build.xcresult" \
                   build 2>&1 | tee -a "$LOG_DIR/build.log" | xcpretty;
               }
           fi
@@ -199,6 +226,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
+                  -resultBundlePath "$LOG_DIR/test.xcresult" \
                   test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
               else
                 echo "No shared scheme detected; skipping XCTest run."
@@ -211,6 +239,7 @@ jobs:
                   -configuration "$CONFIG" \
                   -destination 'platform=macOS' \
                   CODE_SIGNING_ALLOWED=NO \
+                  -resultBundlePath "$LOG_DIR/test.xcresult" \
                   test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
               else
                 echo "No shared scheme detected; skipping XCTest run."
@@ -219,6 +248,18 @@ jobs:
           else
             echo "No XCTest targets detected; skipping test step."
           fi
+
+      - name: Upload CI logs and result bundles
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs-${{ github.run_number }}
+          path: |
+            ${{ env.LOG_DIR }}/
+            ${{ env.LOG_DIR }}/build.xcresult
+            ${{ env.LOG_DIR }}/test.xcresult
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Summarize failure (Option B)
         if: failure()
