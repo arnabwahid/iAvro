@@ -24,6 +24,7 @@ jobs:
       DESTINATION: platform=macOS
       XCODE_VERSION: '15.2'
       NSUnbufferedIO: "YES"
+      COCOAPODS_VERSION: '1.16.2'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,8 +66,9 @@ jobs:
 
       - name: Install CocoaPods (pinned)
         run: |
-          gem install cocoapods -v 1.11.3 --no-document
-          pod --version
+          echo "Installing CocoaPods ${COCOAPODS_VERSION} via RubyGems"
+          gem install cocoapods -v "${COCOAPODS_VERSION}" --no-document
+          echo "CocoaPods version: $(pod --version)"
 
       - name: Install Subversion (for RegexKitLite)
         shell: bash
