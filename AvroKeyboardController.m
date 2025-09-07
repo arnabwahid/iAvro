@@ -60,9 +60,29 @@
             if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ForgivingTypingEnabled"]) {
                 BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ForgivingTypingEnabled"];
                 if (enabled) {
-                    termForLookup = [RomanNormalizer normalize:termForLookup];
+                    CFAbsoluteTime t0 = CFAbsoluteTimeGetCurrent();
+                    NSString *norm = [RomanNormalizer normalize:termForLookup];
                     // Choose best tolerant correction (includes original)
-                    termForLookup = [TolerantDecoder bestFor:termForLookup];
+                    NSString *best = [TolerantDecoder bestFor:norm];
+                    // Optionally, merge original+best lookups for broader suggestions
+                    if ([best isEqualToString:norm]) {
+                        termForLookup = best;
+                        #ifdef DEBUG
+                        NSLog(@"[FT] norm/best=%@ (%.2f ms)", best, (CFAbsoluteTimeGetCurrent()-t0)*1000.0);
+                        #endif
+                    } else {
+                        NSMutableOrderedSet *merged = [NSMutableOrderedSet orderedSet];
+                        NSArray *a = [[Suggestion sharedInstance] getList:norm];
+                        NSArray *b = [[Suggestion sharedInstance] getList:best];
+                        if (a) [merged addObjectsFromArray:a];
+                        if (b) [merged addObjectsFromArray:b];
+                        [_currentCandidates release];
+                        _currentCandidates = [[merged array] mutableCopy];
+                        #ifdef DEBUG
+                        NSLog(@"[FT] norm=%@ best=%@ merged=%lu (%.2f ms)", norm, best, (unsigned long)[_currentCandidates count], (CFAbsoluteTimeGetCurrent()-t0)*1000.0);
+                        #endif
+                        return; // Already set _currentCandidates
+                    }
                 }
             }
             _currentCandidates = [[[Suggestion sharedInstance] getList:termForLookup] retain];

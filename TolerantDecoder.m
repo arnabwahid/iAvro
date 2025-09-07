@@ -27,7 +27,7 @@
         }
     }
 
-    // Missing vowel insertion (insert 'a' between consonant clusters)
+    // Missing vowel insertion (insert a common vowel between consonant clusters)
     NSCharacterSet *vowels = [NSCharacterSet characterSetWithCharactersInString:@"aeiou"]; // lowercase expected
     for (NSUInteger i = 0; i <= len && out.count < MAX(2, maxCount); i++) {
         if (i > 0 && i < len) {
@@ -38,19 +38,25 @@
                 continue;
             }
             if (![vowels characterIsMember:p] && ![vowels characterIsMember:c]) {
-                NSMutableString *m = [roman mutableCopy];
-                [m insertString:@"a" atIndex:i];
-                [out addObject:m];
+                // Try a small set of vowels; add until max reached
+                for (NSString *v in @[@"a", @"e"]) {
+                    NSMutableString *m = [roman mutableCopy];
+                    [m insertString:v atIndex:i];
+                    [out addObject:m];
+                    if (out.count >= maxCount && maxCount > 0) break;
+                }
             }
         }
     }
 
-    // Keyboard neighbor substitution (very small, safe map)
+    // Keyboard neighbor substitution (small, safe map)
     NSDictionary<NSString*, NSArray<NSString*>*> *near = @{
         @"t": @[@"r", @"y"],
         @"e": @[@"w", @"r"],
         @"h": @[@"g", @"j"],
         @"n": @[@"b", @"m"],
+        @"s": @[@"a", @"w", @"x", @"z"],
+        @"z": @[@"s", @"x"],
     };
     for (NSUInteger i = 0; i < len && out.count < MAX(3, maxCount); i++) {
         NSString *ch = [[roman substringWithRange:NSMakeRange(i, 1)] lowercaseString];
@@ -88,4 +94,3 @@
 }
 
 @end
-

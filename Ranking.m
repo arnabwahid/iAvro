@@ -15,9 +15,11 @@
         NSUInteger db = [roman levenshteinDistanceTo:b];
         if (da < db) return NSOrderedAscending;
         if (da > db) return NSOrderedDescending;
+        // Tie-breakers: prefer exact input if present, then lexical
+        if ([a isEqualToString:roman] && ![b isEqualToString:roman]) return NSOrderedAscending;
+        if ([b isEqualToString:roman] && ![a isEqualToString:roman]) return NSOrderedDescending;
         return [a compare:b];
     }];
 }
 
 @end
-
