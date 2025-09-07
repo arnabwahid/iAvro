@@ -117,6 +117,8 @@
 		F1B000001234567800000002 /* decoder.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = decoder.tsv; path = Regression/decoder.tsv; sourceTree = "<group>"; };
 		F1E000021234567800000002 /* Top1RegressionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Top1RegressionTests.m; sourceTree = "<group>"; };
 		F1E000011234567800000001 /* top1.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = top1.tsv; path = Regression/top1.tsv; sourceTree = "<group>"; };
+		F1C200021234567800000002 /* ContextRegressionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContextRegressionTests.m; sourceTree = "<group>"; };
+		F1C200031234567800000003 /* context.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = context.tsv; path = Regression/context.tsv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -329,6 +331,8 @@
 				F1E000021234567800000002 /* Top1RegressionTests.m */,
 				F1E000011234567800000001 /* top1.tsv */,
 				F1C100021234567800000002 /* ContextRankingTests.m */,
+				F1C200021234567800000002 /* ContextRegressionTests.m */,
+				F1C200031234567800000003 /* context.tsv */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -437,6 +441,7 @@
 			files = (
 				F1B000011234567800000001 /* decoder.tsv in Resources */,
 				F1E000031234567800000003 /* top1.tsv in Resources */,
+				F1C200041234567800000004 /* context.tsv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,6 +523,7 @@
 				F1E000041234567800000004 /* Top1RegressionTests.m in Sources */,
 				F1C000061234567800000006 /* ContextRanking.m in Sources */,
 				F1C100031234567800000003 /* ContextRankingTests.m in Sources */,
+				F1C200011234567800000001 /* ContextRegressionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
