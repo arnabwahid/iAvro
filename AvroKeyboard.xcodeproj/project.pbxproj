@@ -108,7 +108,7 @@
         F1A100001234567800000002 /* TolerantDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TolerantDecoder.m; sourceTree = "<group>"; };
         F1A100021234567800000004 /* Ranking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Ranking.m; sourceTree = "<group>"; };
 		F1A100041234567800000006 /* TolerantDecoderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TolerantDecoderTests.m; sourceTree = "<group>"; };
-		F1B000001234567800000002 /* decoder.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = decoder.tsv; path = Tests/Regression/decoder.tsv; sourceTree = "<group>"; };
+		F1B000001234567800000002 /* decoder.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = decoder.tsv; path = Regression/decoder.tsv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
