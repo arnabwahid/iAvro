@@ -16,7 +16,7 @@ jobs:
     # Optionally pin Xcode explicitly to reduce toolchain drift
     # - Uses default Xcode on macOS-13 (15.2) if not set up below
     env:
-      CACHE_VERSION: v1        # bump to v2 to invalidate old caches
+      CACHE_VERSION: v2        # bumped to invalidate old caches
       SCHEME: Avro Keyboard   # Default equals target name in this repo
       TARGET: Avro Keyboard   # Fallback target if no shared scheme
       CONFIG: Debug
