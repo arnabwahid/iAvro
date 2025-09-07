@@ -43,13 +43,14 @@ jobs:
         run: |
           rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
 
-      - name: Check Podfile.lock presence
+      - name: Enforce Podfile.lock presence
         shell: bash
         run: |
           if [[ -f Podfile.lock ]]; then
-            echo "Found Podfile.lock (recommended to commit for reproducibility)."
+            echo "Found Podfile.lock (enforced)."
           else
-            echo "WARNING: Podfile.lock is missing. Commit it to lock pod versions." >&2
+            echo "ERROR: Podfile.lock is missing. Run 'pod install' locally and commit the lockfile for reproducible builds." >&2
+            exit 1
           fi
 
       - name: Enable Xcode problem matcher
@@ -103,7 +104,7 @@ jobs:
             ${{ runner.os }}-${{ env.CACHE_VERSION }}-derived-
             ${{ runner.os }}-derived-
 
-      - name: Pod install
+      - name: Pod install (deployment mode)
         shell: bash
         env:
           COCOAPODS_DISABLE_STATS: "true"
@@ -111,14 +112,11 @@ jobs:
           set -euo pipefail
           echo "Using CocoaPods $(pod --version)"
           mkdir -p "$LOG_DIR"
-          # First try without repo update (CDN should suffice)
-          if ! pod install 2>&1 | tee "$LOG_DIR/pod_install.log"; then
-            echo "pod install failed; cleaning lock/cache and retrying with repo update..."
-            rm -f Podfile.lock
-            rm -rf Pods
-            pod cache clean --all || true
+          # Enforce lockfile resolution
+          if ! pod install --deployment 2>&1 | tee "$LOG_DIR/pod_install.log"; then
+            echo "pod install --deployment failed; retrying after pod repo update..."
             pod repo update || true
-            pod install --repo-update --verbose 2>&1 | tee -a "$LOG_DIR/pod_install.log"
+            pod install --deployment --verbose 2>&1 | tee -a "$LOG_DIR/pod_install.log"
           fi
 
       - name: Pod env (on failure)
