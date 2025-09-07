@@ -43,6 +43,13 @@
       "problemMatcher": []
     },
     {
+      "label": "Check Build (by run id)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/check-build.sh", "${input:runId}"],
+      "problemMatcher": []
+    },
+    {
       "label": "New Session (from continue chat)",
       "type": "shell",
       "command": "bash",
@@ -82,6 +89,14 @@
         "LINE=$(rg -n '^##\\s+Next \\(on resume\\)' docs/export.md | awk -F: '{print $1}' | head -n1 || true); if command -v code >/dev/null 2>&1; then if [[ -n $LINE ]]; then code -r -g docs/export.md:$LINE; else code -r docs/export.md; fi; elif [[ $OSTYPE == darwin* ]]; then open docs/export.md; else sed -n '1,120p' docs/export.md; fi"
       ],
       "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "runId",
+      "type": "promptString",
+      "description": "Enter GitHub Actions run id or URL",
+      "default": ""
     }
   ]
 }
