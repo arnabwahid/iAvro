@@ -57,7 +57,17 @@ static Database* sharedInstance = nil;
         
         NSAutoreleasePool *loopPool = [[NSAutoreleasePool alloc] init];
         
-        NSString* filePath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"db3"];
+        // Prefer test bundle database when running under XCTest; otherwise main bundle
+        NSString *filePath = nil;
+        for (NSBundle *b in [NSBundle allBundles]) {
+            if ([[b.bundlePath lowercaseString] hasSuffix:@".xctest"]) {
+                filePath = [b pathForResource:@"database" ofType:@"db3"];
+                if (filePath) break;
+            }
+        }
+        if (!filePath) {
+            filePath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"db3"];
+        }
         FMDatabase *sqliteDb = [FMDatabase databaseWithPath:filePath];
         [sqliteDb open];
         
