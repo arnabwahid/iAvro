@@ -5,9 +5,10 @@
     
     {
       "label": "New Session CC",
-      "type": "shell",
-      "command": "bash",
-      "args": ["tools/new-session-cc.sh"],
+      "dependsOn": [
+        "New Session (from continue chat)",
+        "Build Chatlog (sessions → chatlog.md)"
+      ],
       "problemMatcher": []
     },
     {
@@ -53,6 +54,33 @@
       "type": "shell",
       "command": "bash",
       "args": ["tools/build-chatlog.sh"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Show Session Context",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-lc", "SUMMARY=1 RUN_FLOW=0 bash tools/new-session-cc.sh"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Latest Session",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "FILE=$(ls -1 docs/sessions/*-session.md 2>/dev/null | sort | tail -n1 || true); if [[ -n $FILE ]]; then (command -v code >/dev/null && code -r \"$FILE\") || ([[ $OSTYPE == darwin* ]] && open \"$FILE\") || sed -n '1,40p' \"$FILE\"; else echo 'No session files found.'; fi"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Export (Next on resume)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "LINE=$(rg -n '^##\\s+Next \\(on resume\\)' docs/export.md | awk -F: '{print $1}' | head -n1 || true); if command -v code >/dev/null 2>&1; then if [[ -n $LINE ]]; then code -r -g docs/export.md:$LINE; else code -r docs/export.md; fi; elif [[ $OSTYPE == darwin* ]]; then open docs/export.md; else sed -n '1,120p' docs/export.md; fi"
+      ],
       "problemMatcher": []
     }
   ]

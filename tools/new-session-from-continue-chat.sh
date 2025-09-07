@@ -2,7 +2,14 @@
 set -euo pipefail
 
 # Consumes docs/continue_chat.txt, creates a timestamped session under docs/sessions,
-# rebuilds docs/chatlog.md (via external task), and creates a blank marker docs/continue_chat.
+# and creates a blank marker docs/continue_chat. Overlap trimming is configurable.
+
+# Optional config overrides
+if [[ -f .chatlogrc ]]; then
+  # shellcheck disable=SC1091
+  source .chatlogrc || true
+fi
+
 PENDING="docs/continue_chat.txt"
 SESS_DIR="docs/sessions"
 TS=$(date +"%Y%m%d-%H%M%S")
@@ -41,6 +48,7 @@ if [[ -f "$CHATLOG" ]]; then
   if [[ "$TRIM_LINES" -gt 0 ]]; then
     # Drop the overlapping prefix from pending
     tail -n +$((TRIM_LINES+1)) "$TMP_PENDING" > "$TRIMMED_PENDING"
+    echo "[new-session] Trimmed overlap: $TRIM_LINES line(s)."
   else
     cp "$TMP_PENDING" "$TRIMMED_PENDING"
   fi

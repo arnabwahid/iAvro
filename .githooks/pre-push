@@ -28,7 +28,15 @@ append_from_file() {
     # Move pending into a session and rebuild chatlog from sessions
     bash "$NEW_SESSION" || true
     bash "$BUILD_CHATLOG" || true
-    git add "$CHAT_FILE" docs/sessions || true
+    # Stage changes only if index is writable
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+      GIT_DIR=$(git rev-parse --git-dir)
+      if [[ -w "$GIT_DIR" ]]; then
+        git add "$CHAT_FILE" docs/sessions || true
+      else
+        echo "[pre-push] Skipping git add (index not writable)."
+      fi
+    fi
   fi
 }
 
@@ -69,7 +77,14 @@ append_from_clipboard() {
       cat "$TMP_CLIP" > "$PENDING_FILE_NEW"
       bash "$NEW_SESSION" || true
       bash "$BUILD_CHATLOG" || true
-      git add "$CHAT_FILE" docs/sessions || true
+      if git rev-parse --git-dir >/dev/null 2>&1; then
+        GIT_DIR=$(git rev-parse --git-dir)
+        if [[ -w "$GIT_DIR" ]]; then
+          git add "$CHAT_FILE" docs/sessions || true
+        else
+          echo "[pre-push] Skipping git add (index not writable)."
+        fi
+      fi
     fi
     rm -f "$TMP_CLIP" || true
   fi

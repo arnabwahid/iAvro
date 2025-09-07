@@ -4,23 +4,5 @@
     "command": "workbench.action.tasks.runTask",
     "args": "New Session CC",
     "when": "editorTextFocus"
-  },
-  {
-    "key": "cmd+alt+shift+f",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Fetch Latest CI Logs (dev)",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "cmd+alt+shift+o",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Open Latest CI Summary",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "cmd+alt+shift+b",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Check Last Build",
-    "when": "editorTextFocus"
   }
 ]

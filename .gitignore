@@ -24,3 +24,6 @@ Pods
 # Local CI logs (downloaded via tools/fetch-latest-ci-logs.sh)
 ci_logs/
 ci-logs/
+ 
+# Chatlog (regenerated locally; not versioned)
+docs/chatlog.md

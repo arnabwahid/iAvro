@@ -38,7 +38,7 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Use the “Check Last Build” workflow below to re‑fetch and inspect the latest run quickly.
 
 ## Chatlog & Session Capture — Local Workflow
-- Canonical log: `docs/chatlog.md` (rebuilt from sessions)
+- Canonical log: `docs/chatlog.md` (rebuilt from sessions; not tracked in Git)
 - Session capture: write verbatim transcript to `docs/continue_chat.txt`; run “New Session CC” to convert it into a session and rebuild the chatlog (or push with the pre‑push hook installed).
 
 ### Helper Scripts & Tasks

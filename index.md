@@ -10,5 +10,6 @@ Short version:
 1) Put verbatim text in `docs/continue_chat.txt`
 2) Preferred: run task “New Session CC” (creates session + rebuilds chatlog)
 3) Or run separately: “New Session (from continue chat)” then “Build Chatlog (sessions → chatlog.md)”
+Note: `docs/chatlog.md` is regenerated and not tracked by Git; keep edits in `docs/sessions/`.
 
 This keeps history clean and avoids merge conflicts. Immediate append tasks are available if needed.
