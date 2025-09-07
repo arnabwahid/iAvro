@@ -21,6 +21,9 @@ jobs:
       TARGET: Avro Keyboard   # Fallback target if no shared scheme
       CONFIG: Debug
       LOG_DIR: ci-logs        # Directory for CI logs and summaries
+      DESTINATION: platform=macOS
+      XCODE_VERSION: '15.2'
+      NSUnbufferedIO: "YES"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,7 +37,7 @@ jobs:
         if: ${{ always() }}
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.2'
+          xcode-version: '${{ env.XCODE_VERSION }}'
 
       - name: Prepare logs directory
         run: |
@@ -183,7 +186,7 @@ jobs:
               -workspace "${WORKSPACE}" \
               -scheme "${SCHEME_RESOLVED}" \
               -configuration "$CONFIG" \
-              -destination 'platform=macOS' \
+              -destination "$DESTINATION" \
               CODE_SIGNING_ALLOWED=NO \
               -resultBundlePath "$LOG_DIR/build.xcresult" \
               build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty
@@ -192,7 +195,7 @@ jobs:
               -project "${PROJECT}" \
               -scheme "${SCHEME_RESOLVED}" \
               -configuration "$CONFIG" \
-              -destination 'platform=macOS' \
+              -destination "$DESTINATION" \
               CODE_SIGNING_ALLOWED=NO \
               -resultBundlePath "$LOG_DIR/build.xcresult" \
               build 2>&1 | tee "$LOG_DIR/build.log" | xcpretty || {
@@ -201,15 +204,16 @@ jobs:
                   -project "${PROJECT}" \
                   -target "$TARGET" \
                   -configuration "$CONFIG" \
-                  -destination 'platform=macOS' \
+                  -destination "$DESTINATION" \
                   CODE_SIGNING_ALLOWED=NO \
                   -resultBundlePath "$LOG_DIR/build.xcresult" \
                   build 2>&1 | tee -a "$LOG_DIR/build.log" | xcpretty;
               }
           fi
-        env:
-          NSUnbufferedIO: "YES"
         continue-on-error: false
+          
+          # Record end time
+          echo "BUILD_END=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Run unit tests (if any)
         shell: bash
@@ -220,27 +224,31 @@ jobs:
             if [[ "${KIND:-}" == "workspace" ]]; then
               # Only run tests with a scheme; if no shared scheme, skip.
               if xcodebuild -list -workspace "${WORKSPACE}" | grep -q "Schemes:"; then
+                echo "TEST_START=$(date +%s)" >> "$GITHUB_ENV"
                 xcodebuild \
                   -workspace "${WORKSPACE}" \
                   -scheme "${SCHEME_RESOLVED}" \
                   -configuration "$CONFIG" \
-                  -destination 'platform=macOS' \
+                  -destination "$DESTINATION" \
                   CODE_SIGNING_ALLOWED=NO \
                   -resultBundlePath "$LOG_DIR/test.xcresult" \
                   test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
+                echo "TEST_END=$(date +%s)" >> "$GITHUB_ENV"
               else
                 echo "No shared scheme detected; skipping XCTest run."
               fi
             else
               if xcodebuild -list -project "${PROJECT}" | grep -q "Schemes:"; then
+                echo "TEST_START=$(date +%s)" >> "$GITHUB_ENV"
                 xcodebuild \
                   -project "${PROJECT}" \
                   -scheme "${SCHEME_RESOLVED}" \
                   -configuration "$CONFIG" \
-                  -destination 'platform=macOS' \
+                  -destination "$DESTINATION" \
                   CODE_SIGNING_ALLOWED=NO \
                   -resultBundlePath "$LOG_DIR/test.xcresult" \
                   test 2>&1 | tee "$LOG_DIR/test.log" | xcpretty
+                echo "TEST_END=$(date +%s)" >> "$GITHUB_ENV"
               else
                 echo "No shared scheme detected; skipping XCTest run."
               fi
@@ -248,6 +256,50 @@ jobs:
           else
             echo "No XCTest targets detected; skipping test step."
           fi
+
+      - name: Write CI Summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$LOG_DIR"
+          BUILD_START_TS=${BUILD_START:-}
+          BUILD_END_TS=${BUILD_END:-}
+          TEST_START_TS=${TEST_START:-}
+          TEST_END_TS=${TEST_END:-}
+          dur() { perl -e '($s,$e)=@ARGV; if($s && $e){ printf("%ds", $e-$s) } else { print "n/a" }' "$1" "$2" 2>/dev/null || echo n/a; }
+          BUILD_DUR=$(dur "$BUILD_START_TS" "$BUILD_END_TS")
+          TEST_DUR=$(dur "$TEST_START_TS" "$TEST_END_TS")
+          {
+            echo "CI Summary"
+            echo "=========="
+            echo "Status: $JOB_STATUS"
+            echo "Kind: ${KIND:-unknown}"
+            echo "Scheme: ${SCHEME_RESOLVED:-${SCHEME:-unset}}"
+            echo "Config: ${CONFIG}"
+            echo "Destination: ${DESTINATION}"
+            echo "Xcode: ${XCODE_VERSION}"
+            echo "Build duration: ${BUILD_DUR} (start: ${BUILD_START_TS:-n/a}, end: ${BUILD_END_TS:-n/a})"
+            echo "Test duration: ${TEST_DUR} (start: ${TEST_START_TS:-n/a}, end: ${TEST_END_TS:-n/a})"
+            echo
+            echo "Logs:"
+            echo "- build: ${LOG_DIR}/build.log"
+            echo "- test:  ${LOG_DIR}/test.log (if any)"
+            echo "- xcresult: ${LOG_DIR}/build.xcresult, ${LOG_DIR}/test.xcresult (if any)"
+          } | tee "${LOG_DIR}/ci_summary.txt"
+          {
+            echo "## CI Summary"
+            echo "- Status: $JOB_STATUS"
+            echo "- Kind: ${KIND:-unknown}"
+            echo "- Scheme: ${SCHEME_RESOLVED:-${SCHEME:-unset}}"
+            echo "- Config: ${CONFIG}"
+            echo "- Destination: ${DESTINATION}"
+            echo "- Xcode: ${XCODE_VERSION}"
+            echo "- Build duration: ${BUILD_DUR}"
+            echo "- Test duration: ${TEST_DUR}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload CI logs and result bundles
         if: always()
