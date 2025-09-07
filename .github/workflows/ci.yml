@@ -22,7 +22,7 @@ jobs:
       CONFIG: Debug
       LOG_DIR: ci-logs        # Directory for CI logs and summaries
       DESTINATION: platform=macOS
-      XCODE_VERSION: '15.2'
+      XCODE_VERSION: '16.2'
       NSUnbufferedIO: "YES"
       COCOAPODS_VERSION: '1.16.2'
     steps:

@@ -10,5 +10,7 @@
 	<true/>
 	<key>ForgivingTypingEnabled</key>
 	<true/>
+    <key>ContextRankingEnabled</key>
+    <true/>
 </dict>
 </plist>

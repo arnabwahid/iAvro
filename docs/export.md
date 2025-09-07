@@ -82,6 +82,11 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Branching: create `feature/phase-b` from `dev` once Phase A merged and green.
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
 
+Progress (Phase B)
+- Added scaffold: `ContextRanking.h/m` with in‑memory history store and pass‑through ranking.
+- Wiring: AvroKeyboardController records committed tokens and (when `ContextRankingEnabled` ON) passes recent history to ranking.
+- Tests: `Tests/ContextRankingTests.m` validates pass‑through behavior and safe history recording.
+
 ## Post‑Install Hook (optional quick tweak)
 If pods still emit low target warnings, add to Podfile:
 
@@ -105,6 +110,8 @@ end
 
 ## Session Log — Saved Context
 Appended: ${USER:-local} session summary
+
+- Updated: 20250908-000703 — captured new session `docs/sessions/20250908-000703-session.md` and rebuilt `docs/chatlog.md`.
 
 - CI: dev is GREEN (latest run downloaded under `ci_logs/`; pointers in `ci_logs/ci_summary.txt`).
 - Chatlog: session-based workflow in place; legacy transcript migrated to `docs/sessions/legacy-*.md`; consolidated `docs/chatlog.md` rebuilt from sessions.

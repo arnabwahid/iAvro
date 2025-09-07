@@ -14,6 +14,7 @@
 #import "AvroParser.h"
 #import "AutoCorrect.h"
 #import "RomanNormalizer.h"
+#import "ContextRanking.h"
 
 @implementation AvroKeyboardController
 
@@ -84,6 +85,16 @@
                         if (b) [merged addObjectsFromArray:b];
                         [_currentCandidates release];
                         _currentCandidates = [[merged array] mutableCopy];
+                        // Optional Phase B: context-aware re-ranking on merged list (guarded by pref)
+                        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ContextRankingEnabled"] &&
+                            [[NSUserDefaults standardUserDefaults] boolForKey:@"ContextRankingEnabled"]) {
+                            NSArray *history = [ContextRanking recentHistory:3];
+                            NSArray *reranked = [ContextRanking rankCandidates:_currentCandidates withHistory:history];
+                            if (reranked) {
+                                [_currentCandidates release];
+                                _currentCandidates = [reranked mutableCopy];
+                            }
+                        }
                         #ifdef DEBUG
                         NSLog(@"[FT] norm=%@ best=%@ merged=%lu (%.2f ms)", norm, best, (unsigned long)[_currentCandidates count], (CFAbsoluteTimeGetCurrent()-t0)*1000.0);
                         #endif
@@ -107,6 +118,16 @@
                     }
                     [_currentCandidates replaceObjectAtIndex:i withObject:
                      [NSString stringWithFormat:@"%@%@%@", [self prefix], item, [self suffix]]];
+                }
+                // Optional Phase B: context-aware re-ranking (guarded by pref)
+                if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ContextRankingEnabled"] &&
+                    [[NSUserDefaults standardUserDefaults] boolForKey:@"ContextRankingEnabled"]) {
+                    NSArray *history = [ContextRanking recentHistory:3];
+                    NSArray *reranked = [ContextRanking rankCandidates:_currentCandidates withHistory:history];
+                    if (reranked) {
+                        [_currentCandidates release];
+                        _currentCandidates = [reranked mutableCopy];
+                    }
                 }
                 // Emoticons                
                 if ([_composedBuffer isEqualToString:[self term]] == NO && 
@@ -182,6 +203,19 @@
 	[self clearCompositionBuffer];
 	[_currentCandidates removeAllObjects];
     [self updateCandidatesPanel];
+    // Record committed token for lightweight context history (Phase B)
+    @try {
+        NSRange range = NSMakeRange([[self prefix] length], 
+                                    [candidateString length] - ([[self prefix] length] + [[self suffix] length]));
+        if (range.location != NSNotFound && NSMaxRange(range) <= [candidateString length]) {
+            NSString *committed = [[candidateString string] substringWithRange:range];
+            if (committed.length > 0) {
+                [ContextRanking recordCommittedToken:committed];
+            }
+        }
+    } @catch (__unused NSException *e) {
+        // best-effort only
+    }
     
     if (_usedArrowKeys) {
         _usedArrowKeys = false;
