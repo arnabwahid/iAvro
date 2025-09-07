@@ -21,3 +21,6 @@ Tasks
 Notes
 - Keep decoder caps small; avoid regressions; grow tests alongside rule changes
 - Consider adding PR comment with top failing tests/statistics (optional)
+
+QA Tips
+- Use “Reset Learned Context” (VS Code task or `bash tools/reset-context.sh`) before A/B checks or bug repros to clear `ContextRankingBigrams` and ensure deterministic behavior.

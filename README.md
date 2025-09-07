@@ -21,3 +21,8 @@ Phase B: Context‑Aware Ranking (Dev Feature)
 - Toggle via terminal (optional):
   - Disable: `defaults write com.omicronlab.inputmethod.AvroKeyboard ContextRankingEnabled -bool NO`
   - Enable: `defaults write com.omicronlab.inputmethod.AvroKeyboard ContextRankingEnabled -bool YES`
+
+Docs & Checklists
+-----------------
+- Phase A checklist: `docs/PHASE_A_CHECKLIST.md`
+- Phase B checklist: `docs/PHASE_B_CHECKLIST.md`
