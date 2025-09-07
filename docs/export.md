@@ -83,9 +83,12 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
 
 Progress (Phase B)
-- Added scaffold: `ContextRanking.h/m` with in‑memory history store and pass‑through ranking.
-- Wiring: AvroKeyboardController records committed tokens and (when `ContextRankingEnabled` ON) passes recent history to ranking.
-- Tests: `Tests/ContextRankingTests.m` validates pass‑through behavior and safe history recording.
+- CI: green on macOS with Xcode 16.2.
+- PR: Phase B tracking opened — https://github.com/arnabwahid/iAvro/pull/3
+- Context ranking: `ContextRanking.h/m` evolved from pass‑through to a minimal bigram‑based boost learned from recent commits.
+- History wiring: `AvroKeyboardController.m` records committed tokens and (when `ContextRankingEnabled` is ON) passes recent history to ranking.
+- Persistence: session‑learned bigrams are saved to `NSUserDefaults` (capped) and loaded lazily.
+- Tests: `Tests/ContextRankingTests.m` (pass‑through, bigram boost, persistence) and `Tests/ContextRegressionTests.m` using `Tests/Regression/context.tsv`.
 
 ## Post‑Install Hook (optional quick tweak)
 If pods still emit low target warnings, add to Podfile:
@@ -127,4 +130,4 @@ Appended: ${USER:-local} session summary
 Next (on resume)
 - Say: “Load context from docs/export.md and docs/chatlog.md. Check last build.”
 - If you have new transcript text: put it in `docs/continue_chat.txt`, run “New Session (from continue chat)”, then “Build Chatlog (sessions → chatlog.md)”.
-- Before first Phase A commit: decide on dev failure flagging (commit comments and/or rolling issue).
+- Phase B follow‑ups: OFF‑mode integration safety test, optional decay of bigrams, and expand context TSV with real sentences.

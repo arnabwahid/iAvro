@@ -107,6 +107,18 @@ static void persistBigrams(void) {
     }];
 }
 
++ (NSArray<NSString *> *)maybeRankCandidates:(NSArray<NSString *> *)candidates
+                                withHistory:(NSArray<NSString *> * _Nullable)history
+{
+    if (!candidates || candidates.count <= 1) return candidates ?: @[];
+    BOOL enabled = NO;
+    @try {
+        enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ContextRankingEnabled"];
+    } @catch (__unused NSException *e) {}
+    if (!enabled) return [NSArray arrayWithArray:candidates];
+    return [self rankCandidates:candidates withHistory:history];
+}
+
 + (void)recordCommittedToken:(NSString *)token {
     if (token.length == 0) return;
     @synchronized(self) {
@@ -123,6 +135,16 @@ static void persistBigrams(void) {
             NSNumber *n = nextMap[token];
             NSInteger c = n ? [n integerValue] : 0;
             nextMap[token] = [NSNumber numberWithInteger:(c + 1)];
+            // Simple decay: if total counts for this prev grow too large, halve all counts (min 1)
+            NSInteger sum = 0; for (NSNumber *v in [nextMap allValues]) sum += v.integerValue;
+            const NSInteger kDecaySumThreshold = 50;
+            if (sum > kDecaySumThreshold) {
+                for (NSString *k in [nextMap allKeys]) {
+                    NSInteger val = [[nextMap objectForKey:k] integerValue];
+                    NSInteger decayed = val / 2; if (decayed < 1) decayed = 1;
+                    nextMap[k] = @(decayed);
+                }
+            }
         }
         // Deduplicate immediate repeats
         if (s_recentHistory.count > 0 && [s_recentHistory[0] isEqualToString:token]) return;

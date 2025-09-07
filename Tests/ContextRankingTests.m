@@ -55,4 +55,20 @@
     XCTAssertTrue(cnt != nil && cnt.integerValue >= 1);
 }
 
+- (void)testOffModeRespectsOriginalOrder {
+    // Ensure that when the pref is OFF, maybeRankCandidates returns original order
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ContextRankingEnabled"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    // Teach a bigram to ensure ranking would otherwise change
+    [ContextRanking recordCommittedToken:@"foo"];
+    [ContextRanking recordCommittedToken:@"bar"];
+    NSArray *hist = @[ @"foo" ];
+    NSArray *input = @[ @"x", @"y", @"bar" ];
+    NSArray *out = [ContextRanking maybeRankCandidates:input withHistory:hist];
+    XCTAssertEqualObjects(out, input, @"OFF mode should preserve original order");
+    // Restore to ON for other tests
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ContextRankingEnabled"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 @end

@@ -12,6 +12,10 @@
 + (NSArray<NSString *> *)rankCandidates:(NSArray<NSString *> *)candidates
                            withHistory:(NSArray<NSString *> * _Nullable)history;
 
+// Convenience: applies ranking only if user default ContextRankingEnabled is ON; otherwise returns candidates unchanged.
++ (NSArray<NSString *> *)maybeRankCandidates:(NSArray<NSString *> *)candidates
+                                withHistory:(NSArray<NSString *> * _Nullable)history;
+
 // Lightweight in-memory history store (per-process) for recent committed tokens.
 + (void)recordCommittedToken:(NSString *)token;
 + (NSArray<NSString *> *)recentHistory:(NSUInteger)limit; // most-recent-first, up to limit

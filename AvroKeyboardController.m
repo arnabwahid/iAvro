@@ -85,11 +85,10 @@
                         if (b) [merged addObjectsFromArray:b];
                         [_currentCandidates release];
                         _currentCandidates = [[merged array] mutableCopy];
-                        // Optional Phase B: context-aware re-ranking on merged list (guarded by pref)
-                        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ContextRankingEnabled"] &&
-                            [[NSUserDefaults standardUserDefaults] boolForKey:@"ContextRankingEnabled"]) {
+                        // Optional Phase B: context-aware re-ranking on merged list (guarded in helper)
+                        {
                             NSArray *history = [ContextRanking recentHistory:3];
-                            NSArray *reranked = [ContextRanking rankCandidates:_currentCandidates withHistory:history];
+                            NSArray *reranked = [ContextRanking maybeRankCandidates:_currentCandidates withHistory:history];
                             if (reranked) {
                                 [_currentCandidates release];
                                 _currentCandidates = [reranked mutableCopy];
@@ -119,11 +118,10 @@
                     [_currentCandidates replaceObjectAtIndex:i withObject:
                      [NSString stringWithFormat:@"%@%@%@", [self prefix], item, [self suffix]]];
                 }
-                // Optional Phase B: context-aware re-ranking (guarded by pref)
-                if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ContextRankingEnabled"] &&
-                    [[NSUserDefaults standardUserDefaults] boolForKey:@"ContextRankingEnabled"]) {
+                // Optional Phase B: context-aware re-ranking (guarded in helper)
+                {
                     NSArray *history = [ContextRanking recentHistory:3];
-                    NSArray *reranked = [ContextRanking rankCandidates:_currentCandidates withHistory:history];
+                    NSArray *reranked = [ContextRanking maybeRankCandidates:_currentCandidates withHistory:history];
                     if (reranked) {
                         [_currentCandidates release];
                         _currentCandidates = [reranked mutableCopy];
