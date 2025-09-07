@@ -27,4 +27,16 @@
     XCTAssertEqualObjects(out, input, @"Scaffold ranking should remain stable");
 }
 
+- (void)testBigramBoostMovesSeenPairUp {
+    // Create a unique bigram prev->curr and ensure curr is boosted when prev is in history.
+    NSString *prev = @"@prev@";
+    NSString *curr = @"@curr@";
+    [ContextRanking recordCommittedToken:prev];
+    [ContextRanking recordCommittedToken:curr];
+    NSArray *hist = @[ prev ];
+    NSArray *input = @[ @"কি", curr, @"ক" ];
+    NSArray *out = [ContextRanking rankCandidates:input withHistory:hist];
+    XCTAssertEqualObjects(out[0], curr, @"Observed bigram should be boosted to front");
+}
+
 @end
