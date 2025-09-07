@@ -118,6 +118,9 @@ Appended: ${USER:-local} session summary
 
 - Updated: 20250908-000703 — captured new session `docs/sessions/20250908-000703-session.md` and rebuilt `docs/chatlog.md`.
 
+- Chatlog rebuilt: docs/chatlog.md updated from sessions.
+- Reminder: next session begins by supplying sample data for `Tests/Regression/context.tsv` (we’ll expand the context regression set and re-run CI).
+
 - CI: dev is GREEN (latest run downloaded under `ci_logs/`; pointers in `ci_logs/ci_summary.txt`).
 - Chatlog: session-based workflow in place; legacy transcript migrated to `docs/sessions/legacy-*.md`; consolidated `docs/chatlog.md` rebuilt from sessions.
 - Tooling:
@@ -133,3 +136,4 @@ Next (on resume)
 - Say: “Load context from docs/export.md and docs/chatlog.md. Check last build.”
 - If you have new transcript text: put it in `docs/continue_chat.txt`, run “New Session (from continue chat)”, then “Build Chatlog (sessions → chatlog.md)”.
 - Phase B follow‑ups: OFF‑mode integration safety test, optional decay of bigrams, and expand context TSV with real sentences.
+ - Start new chat and provide 10–20 sample sentences to grow `Tests/Regression/context.tsv` (prev → expected next + candidates). I’ll add them and wire tests.
