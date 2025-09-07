@@ -1,0 +1,24 @@
+PODS:
+  - FMDB (2.7.12):
+    - FMDB/standard (= 2.7.12)
+  - FMDB/Core (2.7.12)
+  - FMDB/standard (2.7.12):
+    - FMDB/Core
+  - RegexKitLite (4.0)
+
+DEPENDENCIES:
+  - FMDB (~> 2.1)
+  - RegexKitLite (~> 4.0)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
+    - RegexKitLite
+
+SPEC CHECKSUMS:
+  FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
+  RegexKitLite: c0e4c12e6e7de0769f3a3ed679f0f61604170661
+
+PODFILE CHECKSUM: 3942896e714e41d480e4f32fe2ea69c9cbcb7b35
+
+COCOAPODS: 1.16.2
