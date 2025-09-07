@@ -51,12 +51,35 @@
 
     // Keyboard neighbor substitution (small, safe map)
     NSDictionary<NSString*, NSArray<NSString*>*> *near = @{
-        @"t": @[@"r", @"y"],
+        // Row 1
+        @"q": @[@"w"],
+        @"w": @[@"q", @"e"],
         @"e": @[@"w", @"r"],
-        @"h": @[@"g", @"j"],
-        @"n": @[@"b", @"m"],
+        @"r": @[@"e", @"t"],
+        @"t": @[@"r", @"y"],
+        @"y": @[@"t", @"u"],
+        @"u": @[@"y", @"i"],
+        @"i": @[@"u", @"o"],
+        @"o": @[@"i", @"p"],
+        @"p": @[@"o"],
+        // Row 2
+        @"a": @[@"q", @"s", @"z"],
         @"s": @[@"a", @"w", @"x", @"z"],
+        @"d": @[@"s", @"f"],
+        @"f": @[@"d", @"g"],
+        @"g": @[@"f", @"h"],
+        @"h": @[@"g", @"j"],
+        @"j": @[@"h", @"k"],
+        @"k": @[@"j", @"l"],
+        @"l": @[@"k"],
+        // Row 3
         @"z": @[@"s", @"x"],
+        @"x": @[@"z", @"c"],
+        @"c": @[@"x", @"v"],
+        @"v": @[@"c", @"b"],
+        @"b": @[@"v", @"n"],
+        @"n": @[@"b", @"m"],
+        @"m": @[@"n"],
     };
     for (NSUInteger i = 0; i < len && out.count < MAX(3, maxCount); i++) {
         NSString *ch = [[roman substringWithRange:NSMakeRange(i, 1)] lowercaseString];
