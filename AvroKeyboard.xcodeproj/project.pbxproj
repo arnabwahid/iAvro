@@ -44,6 +44,7 @@
 		F1A000011234567800000001 /* RomanNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A000001234567800000002 /* RomanNormalizer.m */; };
 		F1A000031234567800000003 /* NormalizerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A000021234567800000004 /* NormalizerTests.m */; };
 		F1A000061234567800000006 /* RomanNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A000001234567800000002 /* RomanNormalizer.m */; };
+		F1B000011234567800000001 /* decoder.tsv in Resources */ = {isa = PBXBuildFile; fileRef = F1B000001234567800000002 /* decoder.tsv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,7 +107,8 @@
         F1A000021234567800000004 /* NormalizerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NormalizerTests.m; sourceTree = "<group>"; };
         F1A100001234567800000002 /* TolerantDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TolerantDecoder.m; sourceTree = "<group>"; };
         F1A100021234567800000004 /* Ranking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Ranking.m; sourceTree = "<group>"; };
-        F1A100041234567800000006 /* TolerantDecoderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TolerantDecoderTests.m; sourceTree = "<group>"; };
+		F1A100041234567800000006 /* TolerantDecoderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TolerantDecoderTests.m; sourceTree = "<group>"; };
+		F1B000001234567800000002 /* decoder.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; name = decoder.tsv; path = Tests/Regression/decoder.tsv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -313,6 +315,7 @@
 				F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
 				F1A000021234567800000004 /* NormalizerTests.m */,
 				F1A100041234567800000006 /* TolerantDecoderTests.m */,
+				F1B000001234567800000002 /* decoder.tsv */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -419,6 +422,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1B000011234567800000001 /* decoder.tsv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
