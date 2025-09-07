@@ -38,19 +38,16 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Use the “Check Last Build” workflow below to re‑fetch and inspect the latest run quickly.
 
 ## Chatlog & Session Capture — Local Workflow
-- Canonical log: `docs/chatlog.md`
-- Manual append (preferred): use VS Code tasks that call `tools/append-chatlog.sh` with `--label` and `--subject`; dedupe by content hash (CID); optional `--open`.
-- Queued append: write verbatim transcript to `docs/pending_chat_append.txt`; on next `git push` the pre‑push hook appends & removes it.
-- Clipboard auto‑append: OFF by default; if enabled via `.chatlogrc`, includes guards (CID check + tail containment preview) to avoid duplicates.
+- Canonical log: `docs/chatlog.md` (rebuilt from sessions)
+- Session capture: write verbatim transcript to `docs/continue_chat.txt`; run “New Session CC” to convert it into a session and rebuild the chatlog (or push with the pre‑push hook installed).
 
 ### Helper Scripts & Tasks
 - `tools/check-last-build.sh` — one‑click: fetch latest run artifacts, decompress, open summary
 - `tools/fetch-latest-ci-logs.sh` — downloads `ci-logs` artifacts into `./ci_logs/`
 - VS Code tasks:
-  - “Check Last Build” (key: cmd+alt+shift+b)
-  - “Fetch Latest CI Logs (dev)” (key: cmd+alt+shift+f)
-  - “Open Latest CI Summary” (key: cmd+alt+shift+o)
-  - Multiple “Append Chatlog …” tasks for clipboard/file/stdin
+  - “New Session CC” (key: cmd+alt+shift+n)
+  - “New Session (from continue chat)” and “Build Chatlog (sessions → chatlog.md)”
+  - “Check Last Build”, “Fetch Latest CI Logs (dev)”, “Open Latest CI Summary”
 - Local directories ignored by Git: `ci_logs/` (downloaded artifacts)
 
 ## Branches & Policy
@@ -65,9 +62,7 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 - Confirm CI scheme detection uses `Avro Keyboard` (shared scheme committed)
 
 ## TODO / Reminders
-- If we observe duplicate lines when importing large verbatim transcripts, consider tuning overlap trimming:
-  - Session flow: adjust `MAX_OVERLAP_LINES`/`MIN_OVERLAP_LINES` in `tools/new-session-from-pending.sh` (defaults 200/10).
-  - Immediate-append flow: optionally add `--trim-existing` to `tools/append-chatlog.sh` to remove overlap before appending (not implemented yet).
+- If we observe duplicate lines when importing large verbatim transcripts, tune overlap trimming in `tools/new-session-from-continue-chat.sh` via `MAX_OVERLAP_LINES`/`MIN_OVERLAP_LINES` (defaults 200/10).
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
 
 ## Post‑Install Hook (optional quick tweak)
@@ -90,3 +85,22 @@ end
 
 ## Ready Path to Phase A
 - Once `dev` is green, create `feature/forgiving-typing` and begin with RomanNormalizer scaffolding and a small smoke test. Integrate behind prefs; keep changes atomic.
+
+## Session Log — Saved Context
+Appended: ${USER:-local} session summary
+
+- CI: dev is GREEN (latest run downloaded under `ci_logs/`; pointers in `ci_logs/ci_summary.txt`).
+- Chatlog: session-based workflow in place; legacy transcript migrated to `docs/sessions/legacy-*.md`; consolidated `docs/chatlog.md` rebuilt from sessions.
+- Tooling:
+  - `tools/check-last-build.sh` improved (single GH query, per-run folder, latest pointers).
+- New session helpers: `tools/new-session-from-continue-chat.sh`, `tools/build-chatlog.sh`.
+  - Pre-push hook: converts pending → session, rebuilds chatlog, stages changes; creates blank `docs/continue_chat` marker.
+- CI config:
+  - CocoaPods pinned; post_install enforces macOS 10.13 across pods.
+  - Xcode project set to `ALWAYS_SEARCH_USER_PATHS=NO`; deployment targets at 10.13; imports use pod public headers.
+- Docs updated: session-based default, best practices (Subjects/Labels/Tags), index.md pointer.
+
+Next (on resume)
+- Say: “Load context from docs/export.md and docs/chatlog.md. Check last build.”
+- If you have new transcript text: put it in `docs/continue_chat.txt`, run “New Session (from continue chat)”, then “Build Chatlog (sessions → chatlog.md)”.
+- Before first Phase A commit: decide on dev failure flagging (commit comments and/or rolling issue).

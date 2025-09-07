@@ -2,8 +2,8 @@
 # Local pre-push hook to keep chatlog consistent before pushing.
 # This runs only locally; it is not enforced on remote.
 # It supports two optional behaviors:
-# 1) If docs/pending_chat_append.txt exists and is non-empty, append its contents then remove it.
-# 2) If AUTO_APPEND_CLIPBOARD=1 (env) or .chatlogrc contains AUTO_APPEND_CLIPBOARD=1, append clipboard.
+# 1) If docs/continue_chat.txt exists and is non-empty, convert it into a session and rebuild chatlog.
+# 2) If AUTO_APPEND_CLIPBOARD=1 (env) or .chatlogrc contains AUTO_APPEND_CLIPBOARD=1, append clipboard by writing it to docs/continue_chat.txt first.
 # In both cases, it labels the append and stages the chatlog file.
 
 set -euo pipefail
@@ -12,11 +12,10 @@ ROOT_DIR=$(git rev-parse --show-toplevel)
 cd "$ROOT_DIR"
 
 CHAT_FILE="docs/chatlog.md"
-PENDING_FILE="docs/pending_chat_append.txt"
+PENDING_FILE_NEW="docs/continue_chat.txt"
 APPENDER="tools/append-chatlog.sh"
-NEW_SESSION="tools/new-session-from-pending.sh"
+NEW_SESSION="tools/new-session-from-continue-chat.sh"
 BUILD_CHATLOG="tools/build-chatlog.sh"
-LABEL="Pre-push"
 
 # Load optional config
 if [[ -f .chatlogrc ]]; then
@@ -66,8 +65,8 @@ append_from_clipboard() {
           rm -f "$TMP_CLIP"; return
         fi
       fi
-      # Write clipboard into pending and adopt session-based flow
-      cat "$TMP_CLIP" > "$PENDING_FILE"
+      # Write clipboard into pending path and adopt session-based flow
+      cat "$TMP_CLIP" > "$PENDING_FILE_NEW"
       bash "$NEW_SESSION" || true
       bash "$BUILD_CHATLOG" || true
       git add "$CHAT_FILE" docs/sessions || true
@@ -76,8 +75,8 @@ append_from_clipboard() {
   fi
 }
 
-# 1) Pending append file
-append_from_file "$PENDING_FILE"
+# 1) Pending append file — single canonical path
+append_from_file "$PENDING_FILE_NEW"
 
 # 2) Optional clipboard append if enabled
 if [[ "${AUTO_APPEND_CLIPBOARD:-0}" == "1" ]]; then

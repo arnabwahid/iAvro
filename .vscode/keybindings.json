@@ -1,14 +1,8 @@
 [
   {
-    "key": "cmd+alt+shift+l",
+    "key": "cmd+alt+shift+n",
     "command": "workbench.action.tasks.runTask",
-    "args": "Append Chatlog (Clipboard — Codex CLI)",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "cmd+alt+shift+w",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Append Chatlog (Clipboard — ChatGPT Web)",
+    "args": "New Session CC",
     "when": "editorTextFocus"
   },
   {

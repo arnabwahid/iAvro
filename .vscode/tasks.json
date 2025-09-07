@@ -1,91 +1,13 @@
 {
-  // VS Code tasks to append the current clipboard or stdin to the chat log
+  // VS Code tasks for chatlog/session workflow and CI helpers
   "version": "2.0.0",
   "tasks": [
+    
     {
-      "label": "Append Chatlog (Clipboard)",
+      "label": "New Session CC",
       "type": "shell",
       "command": "bash",
-      "args": [
-        "tools/append-chatlog.sh",
-        "--from-clipboard",
-        "--label",
-        "${input:chatlogLabel}",
-        "--subject",
-        "${input:chatlogSubject}",
-        "--open"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "Append Chatlog (Stdin)",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "tools/append-chatlog.sh --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' --open"
-      ],
-      "options": {
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared"
-        }
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Append Chatlog (Clipboard — Codex CLI)",
-      "type": "shell",
-      "command": "bash",
-      "args": ["tools/append-chatlog.sh", "--from-clipboard", "--label", "Codex CLI"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Append Chatlog (Clipboard — ChatGPT Web)",
-      "type": "shell",
-      "command": "bash",
-      "args": ["tools/append-chatlog.sh", "--from-clipboard", "--label", "ChatGPT Web"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Append Chatlog (Clipboard — Prompt Label)",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "tools/append-chatlog.sh",
-        "--from-clipboard",
-        "--label",
-        "${input:chatlogLabel}",
-        "--subject",
-        "${input:chatlogSubject}",
-        "--open"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "Append Chatlog (From File — Prompt Path & Label)",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "tools/append-chatlog.sh",
-        "--from-file",
-        "${input:chatlogFile}",
-        "--label",
-        "${input:chatlogLabel}",
-        "--subject",
-        "${input:chatlogSubject}",
-        "--open"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "Append & Open Chatlog (Clipboard — Prompt Label)",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "tools/append-chatlog.sh --from-clipboard --label '${input:chatlogLabel}' --subject '${input:chatlogSubject}' --open"
-      ],
+      "args": ["tools/new-session-cc.sh"],
       "problemMatcher": []
     },
     {
@@ -120,10 +42,10 @@
       "problemMatcher": []
     },
     {
-      "label": "New Session (from pending)",
+      "label": "New Session (from continue chat)",
       "type": "shell",
       "command": "bash",
-      "args": ["tools/new-session-from-pending.sh"],
+      "args": ["tools/new-session-from-continue-chat.sh"],
       "problemMatcher": []
     },
     {
@@ -132,26 +54,6 @@
       "command": "bash",
       "args": ["tools/build-chatlog.sh"],
       "problemMatcher": []
-    }
-  ],
-  "inputs": [
-    {
-      "id": "chatlogLabel",
-      "type": "promptString",
-      "description": "Enter a label for this chat append (e.g., Codex CLI, ChatGPT Web, Manual)",
-      "default": "Manual"
-    },
-    {
-      "id": "chatlogSubject",
-      "type": "promptString",
-      "description": "Enter a short subject/summary for this append",
-      "default": ""
-    },
-    {
-      "id": "chatlogFile",
-      "type": "promptString",
-      "description": "Path to a text file to append",
-      "default": "tmp/chat_append.txt"
     }
   ]
 }

@@ -12,5 +12,4 @@ fi
 echo "Configuring git to use .githooks as hooksPath (repo-local)"
 git config core.hooksPath .githooks
 
-echo "Done. Pre-push hook installed. Optional config: create .chatlogrc with AUTO_APPEND_CLIPBOARD=1 to enable clipboard appends on push, or write pending content to docs/pending_chat_append.txt before pushing."
-
+echo "Done. Pre-push hook installed. Optional config: create .chatlogrc with AUTO_APPEND_CLIPBOARD=1 to enable clipboard appends on push. To queue content before pushing, write it to docs/continue_chat.txt."

@@ -7,9 +7,8 @@ For instructions on how we capture and maintain the engineering chat log, see:
 - Rolling context & decisions (not a transcript): `docs/export.md`
 
 Short version:
-1) Put verbatim text in `docs/pending_chat_append.txt`
-2) Run task “New Session (from pending)”
-3) Run task “Build Chatlog (sessions → chatlog.md)”
+1) Put verbatim text in `docs/continue_chat.txt`
+2) Preferred: run task “New Session CC” (creates session + rebuilds chatlog)
+3) Or run separately: “New Session (from continue chat)” then “Build Chatlog (sessions → chatlog.md)”
 
 This keeps history clean and avoids merge conflicts. Immediate append tasks are available if needed.
-

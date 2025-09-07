@@ -5,11 +5,5 @@
 # to the chatlog (labelled below) before pushing.
 AUTO_APPEND_CLIPBOARD=1
 
-# Optional: Customize the label used by the pre-push hook appends
-# (visible in the chatlog next to the content hash CID)
-LABEL="Pre-push (Clipboard)"
-
 # Tip: To queue content for the next push, write it to
-# docs/pending_chat_append.txt and it will be appended and removed
-# automatically by the pre-push hook.
-
+# docs/continue_chat.txt and it will be appended and removed automatically by the pre-push hook.

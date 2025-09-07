@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Rebuilds docs/chatlog.md from all docs/sessions/*.md in chronological order.
+# Note: This overwrites docs/chatlog.md; do not edit that file by hand.
 set -euo pipefail
 
 SESS_DIR="docs/sessions"
@@ -7,17 +9,15 @@ OUT="docs/chatlog.md"
 mkdir -p "$SESS_DIR"
 
 {
-  echo "# Chat Log"
-  echo
+  printf "# Chat Log\n\n"
   if compgen -G "$SESS_DIR/*.md" > /dev/null; then
     for f in $(ls -1 "$SESS_DIR"/*.md | sort); do
-      echo "\n---"
-      echo "\n[SESSION_FILE: $(basename "$f")]\n"
+      printf "\n---\n\n[SESSION_FILE: %s]\n\n" "$(basename "$f")"
       cat "$f"
-      echo
+      printf "\n"
     done
   else
-    echo "No session files found under $SESS_DIR yet."
+    printf "No session files found under %s yet.\n" "$SESS_DIR"
   fi
 } > "$OUT"
 

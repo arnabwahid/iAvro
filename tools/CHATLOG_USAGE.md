@@ -2,50 +2,18 @@
 
 This repo uses a session‑based workflow to capture conversations and keep a clean, merge‑friendly history. Verbatim text is filed as timestamped session files, and the consolidated chatlog is generated from these sessions on demand. An alternate “immediate append” path is still available.
 
-Note: `docs/` and `tools/append-chatlog.sh` are ignored by Git in this workspace; they remain local and are not pushed to GitHub. The VS Code config under `.vscode/` is versioned so these tasks/keybindings travel with the repo.
+Note: The consolidated chatlog (`docs/chatlog.md`) is regenerated from session files; do not edit it by hand. The VS Code config under `.vscode/` is versioned so these tasks/keybindings travel with the repo.
 
 ## Quick Start (Default)
-1) Save verbatim text to `docs/pending_chat_append.txt`.
-2) Run task “New Session (from pending)” → moves content to `docs/sessions/YYYYMMDD-HHMMSS-session.md` and creates a blank `docs/pending_chat_append` marker for next time. Any overlapping prefix that already exists at the end of `docs/chatlog.md` is automatically trimmed to avoid duplicates.
-3) Run task “Build Chatlog (sessions → chatlog.md)” → rebuilds `docs/chatlog.md` by concatenating all session files in chronological order.
-4) Review `docs/chatlog.md` and commit.
+1) Save verbatim text to `docs/continue_chat.txt`.
+2) Run task “New Session CC” (umbrella) — it creates a new session file, rebuilds `docs/chatlog.md`, and prints a short context summary (last session tail and the “Next (on resume)” section from export.md).
+3) Review `docs/chatlog.md` and commit.
 
 Benefits: avoids merge conflicts; per‑session diffs are small and easy to review; consolidated log is reproducible.
 
-## Alternate Flow — Immediate Append
-Use when you want to append a single block directly to `docs/chatlog.md` without creating a session file.
+## Notes
 
-- Task: “Append Chatlog (From File — Prompt Path & Label)”
-  - Path: `docs/pending_chat_append.txt` (or any file)
-  - Label: e.g., “ChatGPT Web” or “Codex CLI”
-  - Subject: short summary of the append
-  - The script appends a block with timestamp, `[CID:<sha256>]` for dedupe, `[LABEL:…]`, and `Subject:`. It opens the file on completion.
-
-Dedupe: The appender computes a content hash (CID) and skips exact duplicates. Labels/subjects/timestamps do not affect dedupe.
-
-Script: `tools/append-chatlog.sh`
-
-Each append block adds (example):
-
-```
----
-
-Appended on 2025-09-06 16:55:00 UTC
-[CID:<sha256>] [LABEL:<optional>]
-Subject: <optional subject>
-
-<pasted content>
-```
-
-- `CID` is the SHA‑256 of the normalized content (CRs stripped). It is used to prevent exact duplicate appends.
-- `LABEL` is optional; use it to record the source (e.g., “Codex CLI”, “ChatGPT Web”, “Manual”).
-
-## How Duplicate Prevention Works
-
-- Before appending, the script computes the hash (CID) of the incoming content and checks if a line `"[CID:<hash>]"` already exists anywhere in the chatlog.
-- If found, the append is skipped. Timestamps do not affect this check; duplicates are detected even if run at a different time.
-- If the content changes (even a small typo), the CID changes, and it will be appended as a new block.
-- Use `--force` to append regardless of duplicates.
+- Regeneration: Running “Build Chatlog (sessions → chatlog.md)” overwrites `docs/chatlog.md` from session files. Keep edits in sessions.
 
 ## When Does It Run?
 
@@ -60,9 +28,9 @@ bash tools/install-hooks.sh
 ```
 
 Behavior:
-- If `docs/pending_chat_append.txt` has content, the hook converts it into a timestamped session file, rebuilds `docs/chatlog.md` from sessions, and stages both `docs/chatlog.md` and `docs/sessions/`.
-- A blank `docs/pending_chat_append` marker is created for easy discovery.
-- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc`, the clipboard is written to `pending_chat_append.txt`, then the same session → build flow runs (with CID and preview containment guards).
+- If `docs/continue_chat.txt` has content, the hook converts it into a timestamped session file, rebuilds `docs/chatlog.md` from sessions, and stages both `docs/chatlog.md` and `docs/sessions/`.
+- A blank marker file `docs/continue_chat` is created for easy discovery.
+- If `AUTO_APPEND_CLIPBOARD=1` is set in `.chatlogrc`, the clipboard is written to `docs/continue_chat.txt`, then the same session → build flow runs (with CID and preview containment guards).
 
 Notes:
 - Hooks are local; they don’t travel with pushes. The installer sets `core.hooksPath=.githooks` in your local repo config.
@@ -72,12 +40,12 @@ Notes:
 ## Files & Conventions
 - Consolidated log: `docs/chatlog.md` (rebuilt; do not edit by hand)
 - Session files: `docs/sessions/YYYYMMDD‑HHMMSS-session.md` (immutable once created)
-- Pending buffer: `docs/pending_chat_append.txt` (consumed) and `docs/pending_chat_append` (blank marker)
+- Pending buffer: `docs/continue_chat.txt` (consumed); blank marker: `docs/continue_chat`.
 - Working context (decisions, highlights): `docs/export.md` (rolling, curated; not a transcript)
 
 ## VS Code Config
 
-- Tasks: `.vscode/tasks.json`
+- Tasks: `.vscode/tasks.json` (notable: “New Session CC”, “New Session (from continue chat)”, “Build Chatlog (sessions → chatlog.md)”) 
 - Keybindings: `.vscode/keybindings.json`
 
 These live in the repo for consistency across machines. Adjust locally if they conflict with your setup.

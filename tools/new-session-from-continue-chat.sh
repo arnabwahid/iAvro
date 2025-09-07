@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PENDING="docs/pending_chat_append.txt"
+# Consumes docs/continue_chat.txt, creates a timestamped session under docs/sessions,
+# rebuilds docs/chatlog.md (via external task), and creates a blank marker docs/continue_chat.
+PENDING="docs/continue_chat.txt"
 SESS_DIR="docs/sessions"
 TS=$(date +"%Y%m%d-%H%M%S")
 OUT="$SESS_DIR/$TS-session.md"
@@ -63,4 +65,4 @@ rm -f "$TMP_PENDING" "$TRIMMED_PENDING" 2>/dev/null || true
 echo "New session saved: $OUT"
 
 # Create a blank marker file without extension for easy discovery
-touch "docs/pending_chat_append"
+touch "docs/continue_chat"
