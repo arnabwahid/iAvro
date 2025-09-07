@@ -13,6 +13,7 @@
 #import <RegexKitLite/RegexKitLite.h>
 #import "AvroParser.h"
 #import "AutoCorrect.h"
+#import "TolerantDecoder.h"
 #import "RomanNormalizer.h"
 
 @implementation AvroKeyboardController
@@ -60,6 +61,8 @@
                 BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ForgivingTypingEnabled"];
                 if (enabled) {
                     termForLookup = [RomanNormalizer normalize:termForLookup];
+                    // Choose best tolerant correction (includes original)
+                    termForLookup = [TolerantDecoder bestFor:termForLookup];
                 }
             }
             _currentCandidates = [[[Suggestion sharedInstance] getList:termForLookup] retain];
