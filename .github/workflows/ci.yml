@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-14
     # Optionally pin Xcode explicitly to reduce toolchain drift
     # - Uses default Xcode on macOS-13 (15.2) if not set up below
     env:
@@ -211,9 +211,10 @@ jobs:
               }
           fi
         continue-on-error: false
-          
-          # Record end time
-          echo "BUILD_END=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Record build end time
+        if: always()
+        run: echo "BUILD_END=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Run unit tests (if any)
         shell: bash
@@ -369,10 +370,6 @@ jobs:
           retention-days: 30
           path: |
             ci-logs/**
-
-      - name: Record build end time
-        if: success()
-        run: echo "BUILD_END=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Comment success summary on PR
         if: success() && github.event_name == 'pull_request'
