@@ -8,5 +8,7 @@
 	<false/>
 	<key>IncludeDictionary</key>
 	<true/>
+	<key>ForgivingTypingEnabled</key>
+	<true/>
 </dict>
 </plist>

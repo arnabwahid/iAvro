@@ -41,6 +41,8 @@
 		E93074E20A5C2F1200470842 /* AvroKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = E93074E10A5C2F1200470842 /* AvroKeyboardController.m */; };
 		F0A1B2C30D4E5F60718293A6 /* ModeSmokeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */; };
 		F0A1B2C30D4E5F60718293AA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		F1A000011234567800000001 /* RomanNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A000001234567800000002 /* RomanNormalizer.m */; };
+		F1A000031234567800000003 /* NormalizerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A000021234567800000004 /* NormalizerTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +100,9 @@
 		F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAvroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModeSmokeTests.m; sourceTree = "<group>"; };
 		F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avro Keyboard.release.xcconfig"; path = "Pods/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard.release.xcconfig"; sourceTree = "<group>"; };
+        F1A000041234567800000005 /* RomanNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RomanNormalizer.h; sourceTree = "<group>"; };
+        F1A000001234567800000002 /* RomanNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RomanNormalizer.m; sourceTree = "<group>"; };
+        F1A000021234567800000004 /* NormalizerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NormalizerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +257,8 @@
 		35B007CC1597BFC3000CE409 /* Others */ = {
 			isa = PBXGroup;
 			children = (
+				F1A000041234567800000005 /* RomanNormalizer.h */,
+				F1A000001234567800000002 /* RomanNormalizer.m */,
 				35B6EE6815A0C4A4004C7C9B /* Parsers */,
 				350CED19159CF3300009F0FE /* Suggestion.h */,
 				350CED1A159CF3300009F0FE /* Suggestion.m */,
@@ -300,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
+				F1A000021234567800000004 /* NormalizerTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -469,6 +477,7 @@
 				3553A33515A0009E00FE8491 /* CacheManager.m in Sources */,
 				3528AA9C1853AFF300B8D51F /* AutoCorrectItem.m in Sources */,
 				35B6EE6D15A0C4F2004C7C9B /* NSString+Levenshtein.m in Sources */,
+				F1A000011234567800000001 /* RomanNormalizer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,6 +486,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0A1B2C30D4E5F60718293A6 /* ModeSmokeTests.m in Sources */,
+				F1A000031234567800000003 /* NormalizerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

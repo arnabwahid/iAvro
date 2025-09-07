@@ -13,6 +13,7 @@
 #import <RegexKitLite/RegexKitLite.h>
 #import "AvroParser.h"
 #import "AutoCorrect.h"
+#import "RomanNormalizer.h"
 
 @implementation AvroKeyboardController
 
@@ -54,7 +55,14 @@
             [self setTerm:[items objectAtIndex:2]];
             [self setSuffix:[[AvroParser sharedInstance] parse:[items objectAtIndex:3]]];
             
-            _currentCandidates = [[[Suggestion sharedInstance] getList:[self term]] retain];
+            NSString *termForLookup = [self term];
+            if ([[NSUserDefaults standardUserDefaults] objectForKey:@"ForgivingTypingEnabled"]) {
+                BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ForgivingTypingEnabled"];
+                if (enabled) {
+                    termForLookup = [RomanNormalizer normalize:termForLookup];
+                }
+            }
+            _currentCandidates = [[[Suggestion sharedInstance] getList:termForLookup] retain];
             if (_currentCandidates && [_currentCandidates count] > 0) {
                 NSString* prevString = nil;
                 if ([[NSUserDefaults standardUserDefaults] boolForKey:@"IncludeDictionary"]) {
