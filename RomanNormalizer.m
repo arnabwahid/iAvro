@@ -11,14 +11,22 @@
     if (input == nil || [input length] == 0) {
         return input ?: @"";
     }
-    NSMutableString *s = [[input mutableCopy] autorelease];
+    NSMutableString *s = [input mutableCopy];
+#if !__has_feature(objc_arc)
+    [s autorelease];
+#endif
 
     // 1) Normalize Unicode (NFKC) to make composed forms consistent.
+#if __has_feature(objc_arc)
+    CFMutableStringRef cf = (__bridge CFMutableStringRef)s;
+#else
     CFMutableStringRef cf = (CFMutableStringRef)s;
+#endif
     CFStringNormalize(cf, kCFStringNormalizationFormKC);
 
-    // 2) Lowercase for consistent matching.
-    s = [[[s lowercaseString] mutableCopy] autorelease];
+    // 2) Lowercase for consistent matching (mutate in place).
+    NSString *lower = [s lowercaseString];
+    [s setString:lower];
 
     // 3) Replace smart quotes and dashes with ASCII equivalents.
     NSDictionary *punct = @{
@@ -57,4 +65,3 @@
 }
 
 @end
-
