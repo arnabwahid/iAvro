@@ -13,7 +13,6 @@
 #import <RegexKitLite/RegexKitLite.h>
 #import "AvroParser.h"
 #import "AutoCorrect.h"
-#import "TolerantDecoder.h"
 #import "RomanNormalizer.h"
 
 @implementation AvroKeyboardController
@@ -63,7 +62,14 @@
                     CFAbsoluteTime t0 = CFAbsoluteTimeGetCurrent();
                     NSString *norm = [RomanNormalizer normalize:termForLookup];
                     // Choose best tolerant correction (includes original)
-                    NSString *best = [TolerantDecoder bestFor:norm];
+                    Class decClass = NSClassFromString(@"TolerantDecoder");
+                    NSString *best = norm;
+                    if (decClass && [decClass respondsToSelector:@selector(bestFor:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        best = [decClass performSelector:@selector(bestFor:) withObject:norm];
+#pragma clang diagnostic pop
+                    }
                     // Optionally, merge original+best lookups for broader suggestions
                     if ([best isEqualToString:norm]) {
                         termForLookup = best;
