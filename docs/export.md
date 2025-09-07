@@ -88,6 +88,7 @@ Progress (Phase B)
 - Context ranking: `ContextRanking.h/m` evolved from pass‑through to a minimal bigram‑based boost learned from recent commits.
 - History wiring: `AvroKeyboardController.m` records committed tokens and (when `ContextRankingEnabled` is ON) passes recent history to ranking.
 - Persistence: session‑learned bigrams are saved to `NSUserDefaults` (capped) and loaded lazily.
+- Tuning: history window=5, prev cap=64, next-per-prev cap=8; decay when a prev’s total > 32 (halve counts, min 1).
 - Tests: `Tests/ContextRankingTests.m` (pass‑through, bigram boost, persistence) and `Tests/ContextRegressionTests.m` using `Tests/Regression/context.tsv`.
 
 ## Post‑Install Hook (optional quick tweak)

@@ -8,10 +8,10 @@
 
 static NSMutableArray<NSString *> *s_recentHistory;
 static NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, NSNumber *> *> *s_bigrams; // prev -> (next -> count)
-static const NSUInteger kHistoryMax = 8; // small cap to keep things light
+static const NSUInteger kHistoryMax = 5; // small cap to keep things light
 static NSString * const kBigramsDefaultsKey = @"ContextRankingBigrams";
 static const NSUInteger kPrevMax = 64;      // cap number of prev tokens to persist
-static const NSUInteger kNextPerPrevMax = 12; // cap next variants per prev
+static const NSUInteger kNextPerPrevMax = 8; // cap next variants per prev
 
 static void ensureStoresLoaded(void) {
     if (!s_bigrams) {
@@ -137,7 +137,7 @@ static void persistBigrams(void) {
             nextMap[token] = [NSNumber numberWithInteger:(c + 1)];
             // Simple decay: if total counts for this prev grow too large, halve all counts (min 1)
             NSInteger sum = 0; for (NSNumber *v in [nextMap allValues]) sum += v.integerValue;
-            const NSInteger kDecaySumThreshold = 50;
+            const NSInteger kDecaySumThreshold = 32;
             if (sum > kDecaySumThreshold) {
                 for (NSString *k in [nextMap allKeys]) {
                     NSInteger val = [[nextMap objectForKey:k] integerValue];
