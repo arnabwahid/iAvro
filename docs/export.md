@@ -64,7 +64,33 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 ## TODO / Reminders
 - Commit Podfile.lock: run `pod install` locally to generate it and commit to lock pod versions (CI warns if missing).
 - If we observe duplicate lines when importing large verbatim transcripts, tune overlap trimming in `tools/new-session-from-continue-chat.sh` via `MAX_OVERLAP_LINES`/`MIN_OVERLAP_LINES` (defaults 200/10).
+- To reset Phase B learned context during QA, run: `bash tools/reset-context.sh` (clears `ContextRankingBigrams`).
+
+## Backlog — Phase A Nice‑to‑Haves
+- Integration top‑1: for a few stable words, assert expected is top‑1 (not just present).
+- ON/OFF parity (Suggestion): paired tests where decoder would alter roman; flag OFF must keep Bengali output identical to baseline.
+- TSV growth: expand to ~25–40 rows (multi‑error within limits, near‑keys, no‑ops).
+- Determinism: explicit ordering stability tests when caps/inputs equal.
+- Ranking with priors: when a reliable prior source is confirmed, blend with edit distance + tests.
+- Perf threshold (optional): convert measure to an upper bound once variance is understood.
+
+## Phase B — Preview / Ready Checklist
+- Context‑aware ranking: incorporate local context/history signal to re‑rank candidates.
+- Decoder tuning: extend rules conservatively; keep beam/caps guarded; add regression cases.
+- Regression harness: broaden TSV and/or add a Bengali top‑1 mapping set.
+- Performance: basic benchmarks and log sampling in DEBUG; budget targets per keystroke.
+- Tooling: keep CI artifacts and summaries; consider adding PR comment with top failing tests.
+- Branching: create `feature/phase-b` from `dev` once Phase A merged and green.
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
+
+Progress (Phase B)
+- CI: green on macOS with Xcode 16.2.
+- PR: Phase B tracking opened — https://github.com/arnabwahid/iAvro/pull/3
+- Context ranking: `ContextRanking.h/m` evolved from pass‑through to a minimal bigram‑based boost learned from recent commits.
+- History wiring: `AvroKeyboardController.m` records committed tokens and (when `ContextRankingEnabled` is ON) passes recent history to ranking.
+- Persistence: session‑learned bigrams are saved to `NSUserDefaults` (capped) and loaded lazily.
+- Tuning: history window=5, prev cap=64, next-per-prev cap=8; decay when a prev’s total > 32 (halve counts, min 1).
+- Tests: `Tests/ContextRankingTests.m` (pass‑through, bigram boost, persistence) and `Tests/ContextRegressionTests.m` using `Tests/Regression/context.tsv`.
 
 ## Post‑Install Hook (optional quick tweak)
 If pods still emit low target warnings, add to Podfile:
@@ -90,6 +116,11 @@ end
 ## Session Log — Saved Context
 Appended: ${USER:-local} session summary
 
+- Updated: 20250908-000703 — captured new session `docs/sessions/20250908-000703-session.md` and rebuilt `docs/chatlog.md`.
+
+- Chatlog rebuilt: docs/chatlog.md updated from sessions.
+- Reminder: next session begins by supplying sample data for `Tests/Regression/context.tsv` (we’ll expand the context regression set and re-run CI).
+
 - CI: dev is GREEN (latest run downloaded under `ci_logs/`; pointers in `ci_logs/ci_summary.txt`).
 - Chatlog: session-based workflow in place; legacy transcript migrated to `docs/sessions/legacy-*.md`; consolidated `docs/chatlog.md` rebuilt from sessions.
 - Tooling:
@@ -104,4 +135,5 @@ Appended: ${USER:-local} session summary
 Next (on resume)
 - Say: “Load context from docs/export.md and docs/chatlog.md. Check last build.”
 - If you have new transcript text: put it in `docs/continue_chat.txt`, run “New Session (from continue chat)”, then “Build Chatlog (sessions → chatlog.md)”.
-- Before first Phase A commit: decide on dev failure flagging (commit comments and/or rolling issue).
+- Phase B follow‑ups: OFF‑mode integration safety test, optional decay of bigrams, and expand context TSV with real sentences.
+ - Start new chat and provide 10–20 sample sentences to grow `Tests/Regression/context.tsv` (prev → expected next + candidates). I’ll add them and wire tests.

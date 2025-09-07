@@ -46,8 +46,7 @@ Notes:
 
 ## VS Code Config
 
-- Tasks: `.vscode/tasks.json` (notable: “New Session CC” composite, “Show Session Context”, “Open Latest Session”, “Open Export (Next on resume)”, “New Session (from continue chat)”, “Build Chatlog”) 
- - Tasks: `.vscode/tasks.json` (notable: “New Session CC” composite, “Show Session Context”, “Open Latest Session”, “Open Export (Next on resume)”, “New Session (from continue chat)”, “Build Chatlog”, “Check Build (by run id)”, “Check Last Build”) 
+- Tasks: `.vscode/tasks.json` (notable: “New Session CC” composite, “Show Session Context”, “Open Latest Session”, “Open Export (Next on resume)”, “New Session (from continue chat)”, “Build Chatlog”, “Check Build (by run id)”, “Check Last Build”, “Check Last Build (current branch)”, “Fetch Latest CI Logs (current branch)”, “Build & Test (xcodebuild)”, “Reset Learned Context”) 
 
 ## Quick Reference
 - Add text: write to `docs/continue_chat.txt`
@@ -72,7 +71,10 @@ Available VS Code tasks (labels as seen in the Command Palette):
 - Install Git Hooks (pre-push chatlog): installs `.githooks` as the repo’s hook path.
 - Check Last Build: fetches and summarizes latest CI run (requires `gh` configured).
 - Fetch Latest CI Logs (dev): downloads CI artifacts into `./ci_logs/`.
+- Fetch Latest CI Logs (current branch): resolves your current branch and downloads artifacts into `./ci_logs/`.
 - Open Latest CI Summary: opens the most recent `ci_logs/**/ci_summary.txt` if present.
+- Build & Test (xcodebuild): local `xcodebuild` clean build + test (requires full Xcode installed).
+- Reset Learned Context: clears Phase B’s learned context (`ContextRankingBigrams`) via `tools/reset-context.sh`.
 
 Keybindings are defined in `.vscode/keybindings.json`. By default only “New Session CC” is bound to cmd+alt+shift+n.
 

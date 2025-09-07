@@ -12,6 +12,28 @@
       "problemMatcher": []
     },
     {
+      "label": "Reset Learned Context",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/reset-context.sh"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Build & Test (xcodebuild)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["tools/xcode-build.sh"],
+      "options": {
+        "env": {
+          "SCHEME": "Avro Keyboard",
+          "CONFIG": "Debug",
+          "DESTINATION": "platform=macOS",
+          "CODE_SIGNING_ALLOWED": "NO"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Install Git Hooks (pre-push chatlog)",
       "type": "shell",
       "command": "bash",
@@ -23,6 +45,16 @@
       "type": "shell",
       "command": "bash",
       "args": ["tools/fetch-latest-ci-logs.sh", "dev", "./ci_logs"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Fetch Latest CI Logs (current branch)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "BR=$(git rev-parse --abbrev-ref HEAD); bash tools/fetch-latest-ci-logs.sh \"$BR\" ./ci_logs"
+      ],
       "problemMatcher": []
     },
     {
@@ -40,6 +72,16 @@
       "type": "shell",
       "command": "bash",
       "args": ["tools/check-last-build.sh", "dev"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Check Last Build (current branch)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "BR=$(git rev-parse --abbrev-ref HEAD); bash tools/check-last-build.sh \"$BR\""
+      ],
       "problemMatcher": []
     },
     {
