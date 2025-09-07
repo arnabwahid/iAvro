@@ -91,12 +91,12 @@
 		832F56401F994B6500432D7A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Avro Keyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avro Keyboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAvroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModeSmokeTests.m; sourceTree = "<group>"; };
 		9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avro Keyboard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard.debug.xcconfig"; sourceTree = "<group>"; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		E93074E00A5C2F1200470842 /* AvroKeyboardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvroKeyboardController.h; sourceTree = "<group>"; };
 		E93074E10A5C2F1200470842 /* AvroKeyboardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvroKeyboardController.m; sourceTree = "<group>"; };
+		F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAvroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModeSmokeTests.m; sourceTree = "<group>"; };
 		F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Avro Keyboard.release.xcconfig"; path = "Pods/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -113,14 +113,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-        F0A1B2C30D4E5F60718293A3 /* Frameworks */ = {
-            isa = PBXFrameworksBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                F0A1B2C30D4E5F60718293AA /* Cocoa.framework in Frameworks */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		F0A1B2C30D4E5F60718293A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0A1B2C30D4E5F60718293AA /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -165,7 +165,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* NumberInput */ = {
+		29B97314FDCFA39411CA2CEA = {
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -287,23 +287,23 @@
 			name = Libraries;
 			sourceTree = "<group>";
 		};
-DDDA97BE03464C15B5058815 /* Pods */ = {
-            isa = PBXGroup;
-            children = (
-                9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */,
-                F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */,
-            );
-            name = Pods;
-            sourceTree = "<group>";
-        };
-        F0A1B2C30D4E5F60718293AB /* Tests */ = {
-            isa = PBXGroup;
-            children = (
-                F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
-            );
-            path = Tests;
-            sourceTree = "<group>";
-        };
+		DDDA97BE03464C15B5058815 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9BE514399134C547D83E8518 /* Pods-Avro Keyboard.debug.xcconfig */,
+				F63F96C5EF8B57064296B7BD /* Pods-Avro Keyboard.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		F0A1B2C30D4E5F60718293AB /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F0A1B2C30D4E5F60718293A7 /* ModeSmokeTests.m */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -315,6 +315,7 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				5C624FD2BF7D979D283901D8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -326,23 +327,23 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			productReference = 8D1107320486CEB800E47090 /* Avro Keyboard.app */;
 			productType = "com.apple.product-type.application";
 		};
-        F0A1B2C30D4E5F60718293A1 /* iAvroTests */ = {
-            isa = PBXNativeTarget;
-            buildConfigurationList = F0A1B2C30D4E5F60718293B0 /* Build configuration list for PBXNativeTarget "iAvroTests" */;
-            buildPhases = (
-                F0A1B2C30D4E5F60718293A4 /* Resources */,
-                F0A1B2C30D4E5F60718293A2 /* Sources */,
-                F0A1B2C30D4E5F60718293A3 /* Frameworks */,
-            );
-            buildRules = (
-            );
-            dependencies = (
-            );
-            name = iAvroTests;
-            productName = iAvroTests;
-            productReference = F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */;
-            productType = "com.apple.product-type.bundle.unit-test";
-        };
+		F0A1B2C30D4E5F60718293A1 /* iAvroTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F0A1B2C30D4E5F60718293B0 /* Build configuration list for PBXNativeTarget "iAvroTests" */;
+			buildPhases = (
+				F0A1B2C30D4E5F60718293A4 /* Resources */,
+				F0A1B2C30D4E5F60718293A2 /* Sources */,
+				F0A1B2C30D4E5F60718293A3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iAvroTests;
+			productName = iAvroTests;
+			productReference = F0A1B2C30D4E5F60718293A5 /* iAvroTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -369,7 +370,7 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 				en,
 				English,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* NumberInput */;
+			mainGroup = 29B97314FDCFA39411CA2CEA;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -401,13 +402,13 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-        F0A1B2C30D4E5F60718293A4 /* Resources */ = {
-            isa = PBXResourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		F0A1B2C30D4E5F60718293A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -427,6 +428,24 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5C624FD2BF7D979D283901D8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB_Privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FMDB_Privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Avro Keyboard/Pods-Avro Keyboard-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -453,14 +472,14 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-        F0A1B2C30D4E5F60718293A2 /* Sources */ = {
-            isa = PBXSourcesBuildPhase;
-            buildActionMask = 2147483647;
-            files = (
-                F0A1B2C30D4E5F60718293A6 /* ModeSmokeTests.m in Sources */,
-            );
-            runOnlyForDeploymentPostprocessing = 0;
-        };
+		F0A1B2C30D4E5F60718293A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0A1B2C30D4E5F60718293A6 /* ModeSmokeTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -594,38 +613,38 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			};
 			name = Release;
 		};
-        F0A1B2C30D4E5F60718293B1 /* Debug */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                ALWAYS_SEARCH_USER_PATHS = NO;
-                CLANG_ENABLE_OBJC_ARC = YES;
-                COMBINE_HIDPI_IMAGES = YES;
-                GENERATE_INFOPLIST_FILE = YES;
-                INFOPLIST_KEY_CFBundleIdentifier = com.example.iAvroTests;
-                LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-                MACOSX_DEPLOYMENT_TARGET = 10.13;
-                PRODUCT_BUNDLE_IDENTIFIER = com.example.iAvroTests;
-                PRODUCT_NAME = iAvroTests;
-                WRAPPER_EXTENSION = xctest;
-            };
-            name = Debug;
-        };
-        F0A1B2C30D4E5F60718293B2 /* Release */ = {
-            isa = XCBuildConfiguration;
-            buildSettings = {
-                ALWAYS_SEARCH_USER_PATHS = NO;
-                CLANG_ENABLE_OBJC_ARC = YES;
-                COMBINE_HIDPI_IMAGES = YES;
-                GENERATE_INFOPLIST_FILE = YES;
-                INFOPLIST_KEY_CFBundleIdentifier = com.example.iAvroTests;
-                LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-                MACOSX_DEPLOYMENT_TARGET = 10.13;
-                PRODUCT_BUNDLE_IDENTIFIER = com.example.iAvroTests;
-                PRODUCT_NAME = iAvroTests;
-                WRAPPER_EXTENSION = xctest;
-            };
-            name = Release;
-        };
+		F0A1B2C30D4E5F60718293B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleIdentifier = com.example.iAvroTests;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.iAvroTests;
+				PRODUCT_NAME = iAvroTests;
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		F0A1B2C30D4E5F60718293B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleIdentifier = com.example.iAvroTests;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.iAvroTests;
+				PRODUCT_NAME = iAvroTests;
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -647,16 +666,16 @@ DDDA97BE03464C15B5058815 /* Pods */ = {
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-        F0A1B2C30D4E5F60718293B0 /* Build configuration list for PBXNativeTarget "iAvroTests" */ = {
-            isa = XCConfigurationList;
-            buildConfigurations = (
-                F0A1B2C30D4E5F60718293B1 /* Debug */,
-                F0A1B2C30D4E5F60718293B2 /* Release */,
-            );
-            defaultConfigurationIsVisible = 0;
-            defaultConfigurationName = Release;
-        };
+		F0A1B2C30D4E5F60718293B0 /* Build configuration list for PBXNativeTarget "iAvroTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0A1B2C30D4E5F60718293B1 /* Debug */,
+				F0A1B2C30D4E5F60718293B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 	};
-rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }
