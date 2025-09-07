@@ -64,6 +64,22 @@ This file is maintained by Codex for fast, uninterrupted continuation of work. I
 ## TODO / Reminders
 - Commit Podfile.lock: run `pod install` locally to generate it and commit to lock pod versions (CI warns if missing).
 - If we observe duplicate lines when importing large verbatim transcripts, tune overlap trimming in `tools/new-session-from-continue-chat.sh` via `MAX_OVERLAP_LINES`/`MIN_OVERLAP_LINES` (defaults 200/10).
+
+## Backlog — Phase A Nice‑to‑Haves
+- Integration top‑1: for a few stable words, assert expected is top‑1 (not just present).
+- ON/OFF parity (Suggestion): paired tests where decoder would alter roman; flag OFF must keep Bengali output identical to baseline.
+- TSV growth: expand to ~25–40 rows (multi‑error within limits, near‑keys, no‑ops).
+- Determinism: explicit ordering stability tests when caps/inputs equal.
+- Ranking with priors: when a reliable prior source is confirmed, blend with edit distance + tests.
+- Perf threshold (optional): convert measure to an upper bound once variance is understood.
+
+## Phase B — Preview / Ready Checklist
+- Context‑aware ranking: incorporate local context/history signal to re‑rank candidates.
+- Decoder tuning: extend rules conservatively; keep beam/caps guarded; add regression cases.
+- Regression harness: broaden TSV and/or add a Bengali top‑1 mapping set.
+- Performance: basic benchmarks and log sampling in DEBUG; budget targets per keystroke.
+- Tooling: keep CI artifacts and summaries; consider adding PR comment with top failing tests.
+- Branching: create `feature/phase-b` from `dev` once Phase A merged and green.
 - Revisit Subversion install in CI: once RegexKitLite is reliably sourced via a Git podspec or vendored, remove the Homebrew Subversion install step.
 
 ## Post‑Install Hook (optional quick tweak)
