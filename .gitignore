@@ -27,3 +27,7 @@ ci-logs/
  
 # Chatlog (regenerated locally; not versioned)
 docs/chatlog.md
+
+# Local build artifacts
+/build.log
+*.xcresult
