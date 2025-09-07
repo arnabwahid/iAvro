@@ -47,6 +47,7 @@ Notes:
 ## VS Code Config
 
 - Tasks: `.vscode/tasks.json` (notable: “New Session CC” composite, “Show Session Context”, “Open Latest Session”, “Open Export (Next on resume)”, “New Session (from continue chat)”, “Build Chatlog”) 
+ - Tasks: `.vscode/tasks.json` (notable: “New Session CC” composite, “Show Session Context”, “Open Latest Session”, “Open Export (Next on resume)”, “New Session (from continue chat)”, “Build Chatlog”, “Check Build (by run id)”, “Check Last Build”) 
 
 ## Quick Reference
 - Add text: write to `docs/continue_chat.txt`
