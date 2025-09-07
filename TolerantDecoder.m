@@ -81,6 +81,15 @@
         @"n": @[@"b", @"m"],
         @"m": @[@"n"],
     };
+    // Single deletion (drop one character)
+    if (len >= 2) {
+        for (NSUInteger i = 0; i < len && out.count < MAX(4, maxCount); i++) {
+            NSMutableString *m = [roman mutableCopy];
+            [m deleteCharactersInRange:NSMakeRange(i, 1)];
+            [out addObject:m];
+            if (out.count >= maxCount && maxCount > 0) break;
+        }
+    }
     for (NSUInteger i = 0; i < len && out.count < MAX(3, maxCount); i++) {
         NSString *ch = [[roman substringWithRange:NSMakeRange(i, 1)] lowercaseString];
         NSArray *alts = near[ch];

@@ -23,6 +23,19 @@
     XCTAssertEqualObjects(out, @"\"test\"- 'ok'");
 }
 
+- (void)testCRLFAndWhitespaceCollapse {
+    NSString *in = @"line1\r\nline2   line3";
+    NSString *out = [RomanNormalizer normalize:in];
+    XCTAssertEqualObjects(out, @"line1 line2 line3");
+}
+
+- (void)testMultipleDashesAndEllipses {
+    NSString *in = @"A—B – C …";
+    NSString *out = [RomanNormalizer normalize:in];
+    // Dashes become "- " and whitespace collapses
+    XCTAssertEqualObjects(out, @"a- b - c ...");
+}
+
 - (void)testMacronsFallbacks {
     NSString *in = @"k\u0101l\u012b"; // kālī
     NSString *out = [RomanNormalizer normalize:in];
@@ -31,4 +44,3 @@
 }
 
 @end
-

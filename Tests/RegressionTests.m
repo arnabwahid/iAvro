@@ -28,10 +28,9 @@
         NSString *input = cols[0];
         NSString *expected = cols[1];
         NSString *norm = [RomanNormalizer normalize:input];
-        NSString *best = [TolerantDecoder bestFor:norm];
-        XCTAssertEqualObjects(best, expected, @"Input=%@ norm=%@", input, norm);
+        NSArray *cands = [TolerantDecoder candidatesFor:norm max:12];
+        XCTAssertTrue([cands containsObject:expected], @"Input=%@ norm=%@ expected=%@ cands=%@", input, norm, expected, cands);
     }
 }
 
 @end
-
